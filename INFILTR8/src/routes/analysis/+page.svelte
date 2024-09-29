@@ -173,6 +173,24 @@
                     <p> {timestamp}</p>
                 </div>
             </div>
+            <!-- Entry Points dropdown section -->
+            <div id="entryPoints" class="my-6">
+                <label for="entry-point-type" class="block text-sm font-medium text-gray-700">Entry Points</label>
+                <select id="entry-point-type" name="entry-point-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="" selected>All</option>
+                    <option value="unauthorized-port-bypass">Unauthorized Port Bypass</option>
+                    <option value="default-credentials">Default Credentials</option>
+                    <option value="unpatched-software">Unpatched Software Exploits</option>
+                    <option value="protocols-missing-encryption">Protocols Missing Encryption</option>
+                    <option value="weak-passwords">Weak Passwords</option>
+                </select>
+            </div>
+            <!-- View Results button -->
+            <div id="viewResults" class="my-6">
+                <button type="button" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+                    View Results
+                </button>
+            </div>
         </div>
     </div>  
 </main>
