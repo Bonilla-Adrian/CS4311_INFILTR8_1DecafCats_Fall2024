@@ -102,9 +102,12 @@
   <div class="flex flex-row items-start justify-between min-h-screen w-full">
     <div class="flex-grow">
       <div class="flex flex-col items-center justify-center w-full">
-        <Heading tag="h1" class="mb-4 text-3xl text-center font-extrabold md:text-5xl lg:text-6xl">
-          <Span gradient>WELCOME TO INFILTR8</Span>
-        </Heading>
+      <Heading
+        tag="h1"
+        class="gradient heading mb-4 text-center text-3xl font-extrabold md:text-5xl lg:text-6xl"
+      >
+        WELCOME TO INFILTR8
+      </Heading>
         <P>Please select from the following to get started on your project.</P>
 
         <!-- Dropzone component for file uploads -->

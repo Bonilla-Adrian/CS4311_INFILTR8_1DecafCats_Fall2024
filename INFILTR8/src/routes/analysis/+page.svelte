@@ -76,10 +76,10 @@
 
     const sysInfo = new SystemInfo()
     var timestamp = sysInfo.getCurrentTimestamp()
+    var date =  sysInfo.getFormattedDate()
 
     const logger = new LogManager()
-    
-
+   
 </script>
 
 
@@ -95,12 +95,13 @@
       </Heading>
 
     <div>
-        <!-- start of the left column -->    
-        <div id="left" class="float-left  w-8/12 h-flex shadow-2xl border-2 rounded-md">
+        <!-- start of the left column -->   
+          
+        <div id="left" class="float-left  w-8/12 h-flex shadow-2xl  rounded-md">
             <!-- table section -->
             <div id="table" class="my-14">
                 <Table noborder={true}>
-                    <TableHead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                    <TableHead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-900 dark:text-gray-400">
                     <TableHeadCell>Date</TableHeadCell>
                     <TableHeadCell>Analyst</TableHeadCell>
                     <TableHeadCell>File Size</TableHeadCell>
@@ -117,7 +118,7 @@
                         <TableBodyCell>9/12/2024 - 10:00:00 AM</TableBodyCell>
                         <TableBodyCell>John Doe</TableBodyCell>
                         <TableBodyCell>2.1 mb</TableBodyCell>
-                        <TableBodyCell><Progressbar progress="43" /></TableBodyCell>
+                        <TableBodyCell><Progressbar progress="43" labelInside /></TableBodyCell>
                     </TableBodyRow>
                     <TableBodyRow>
                         <TableBodyCell>9/10/2024 - 10:43:21 AM</TableBodyCell>
@@ -164,10 +165,12 @@
                     <Chart {options} class="py-6" />
                   </Card>
             </div>
+            
             <!-- start of current project settings -->
-            <div id="bottomSettings" class="py-8 rounded-md shadow-2xl">
-                <h2 class="text-center font-bold">Current Test</h2>
-                <div class="px-2">
+            <div id="bottomSettings" class=" py-6 rounded-md shadow-2xl  ">
+                <h2 class="text-center font-bold  font-bold leading-none text-gray-900 dark:text-white me-1 dark:bg-gray-900">Current Test</h2>
+                
+                <div class="px-2 dark:text-white dark:bg-gray-700">
                     <p>Project Name: Test Run</p>
                     <p>Analyst: John Doe</p>
                     <p>File Location: /Path/goes/here/</p>
@@ -176,9 +179,90 @@
                     <p>Time Started: 10:00:00 AM - 9/12/2024</p>
                     <p>Time Completed: </p>
                     <button type="button" on:click={logger.logUserAction("Ashley Rivas","button click", "user clicked button")}> click this</button>
+                    <button type="button" on:click={logger.getLogsForDate("Ashley Rivas","button click", "user clicked button")}> click this</button>
+                    <p> {timestamp}</p>
+                </div>
+            </div>
+            <!-- Entry Points dropdown section -->
+            <div id="entryPoints" class="my-6 ">
+                <label for="entry-point-type" class=" dark:text-white block text-sm font-medium text-gray-700">Entry Points</label>
+                <select id="entry-point-type" name="entry-point-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="" selected>All</option>
+                    <option value="unauthorized-port-bypass">Unauthorized Port Bypass</option>
+                    <option value="default-credentials">Default Credentials</option>
+                    <option value="unpatched-software">Unpatched Software Exploits</option>
+                    <option value="protocols-missing-encryption">Protocols Missing Encryption</option>
+                    <option value="weak-passwords">Weak Passwords</option>
+                </select>
+            </div>
+            <!-- View Results button -->
+            <div id="viewResults" class="my-6">
+                <button type="button" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+                    View Results
+                </button>
+            </div>
+        </div>
+
+
+        
+        <div id="middle" class="flex-top float-left  w-8/12  py-0">
+            <!-- start of Summary-->
+            <div id="bottomSettings" class="py-8 rounded-md shadow-2xl dark:bg-gray-900"> 
+                <h2 class="text-center font-bold text-xl  font-bold leading-none text-gray-900 dark:text-white me-1 dark:bg-gray-900" >Summary</h2>
+                <div class="overflow-y-auto h-11  max-w-2xs lg:h-[calc(100vh-30rem)] lg:block dark:bg-gray-800 lg:me-0 lg:sticky top-2 px-2 dark:text-white dark:bg-gray-700">
+                    <p>Current Testing</p>
+                    <p>Weak password Attack</p>
+                    <p>Device X</p>
+                    <p>IP 17.172.224.47</p>
+                    <p>Device C</p>
+                    <p>Status OK/</p>
+                    <p>------ {timestamp}-------</p>
+                    <p> &nbsp;</p>
+
+                    <p>Current Testing</p>
+                    <p>Weak password Attack</p>
+                    <p>Device X</p>
+                    <p>IP 17.172.224.46</p>
+                    <p>Device C</p>
+                    <p>Status OK/</p>
+                    <p></p>
+                    <p>------ {timestamp}-------</p>
+                    <p> &nbsp;</p>
+
+                    <p>Current Testing</p>
+                    <p>Weak password Attack</p>
+                    <p>Device X</p>
+                    <p>IP 17.172.224.48</p>
+                    <p>Device C</p>
+                    <p>Status OK/</p>
+                    <p></p>
+                    <p>------ {timestamp}-------</p>
+                    <p> &nbsp;</p>
+
+                    <p>Current Testing</p>
+                    <p>Weak password Attack</p>
+                    <p>Device Z</p>
+                    <p>IP 17.172.224.4</p>
+                    <p>Device C</p>
+                    <p>Status OK/</p>
+                    <p>------ {timestamp}-------</p>
+                    <p> &nbsp;</p>
+                    
+
+
                     <p> {timestamp}</p>
                 </div>
             </div>
         </div>
+
+
+
+
+
+
+
+        
+        
+            
     </div>  
 </main>
