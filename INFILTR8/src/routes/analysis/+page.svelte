@@ -5,6 +5,7 @@
     import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     import { Chart, Card, A, Button, Dropdown, DropdownItem, Popover, Tooltip } from 'flowbite-svelte';
     import { InfoCircleSolid, ArrowDownToBracketOutline, ChevronDownOutline, ChevronRightOutline, PenSolid, DownloadSolid, ShareNodesSolid } from 'flowbite-svelte-icons';
+    import { Heading, P, Span } from 'flowbite-svelte';
 
     // pie chart
     const options = {
@@ -86,7 +87,12 @@
 
 <!-- whole page -->
 <main>
-    <h1 class="font-bold text-xl">Analysis</h1>
+      <Heading
+        tag="h1"
+        class="gradient heading mb-4 text-center text-3xl font-extrabold md:text-5xl lg:text-6xl"
+      >
+        ANALYSIS
+      </Heading>
 
     <div>
         <!-- start of the left column -->    
