@@ -10,7 +10,7 @@
 	import { fade } from 'svelte/transition';
 	import { menuOpen } from '$lib/stores.js';
 
-	export let open = false;
+	export let open = $menuOpen || false;
 	let slideMenu = false;
 
 	export let userInitials = 'U';
@@ -32,27 +32,10 @@
 		},
 		{ text: 'Analysis', href: '/analysis', icon: Icon.BookSolid },
 		{
-			text: 'Project', href: '/project', icon: Icon.DatabaseSolid
-		},
-		{
-			text: 'Login',
-			href: '/login',
-			icon: Icon.BriefcaseSolid
+			text: 'Project',
+			href: '/project',
+			icon: Icon.DatabaseSolid
 		}
-		//    { text: 'Cart', href: '/cart', icon: 'CartOutline' }
-	];
-
-	// Navigation links data
-	const navLinks = [
-		{ text: 'Scenarios', href: '/scenarios', icon: Icon.LightbulbSolid },
-		{ text: 'Categories', href: '/categories', icon: Icon.LightbulbSolid },
-		{ text: 'Platforms', href: '/platforms', icon: Icon.LightbulbSolid },
-		{ text: 'Test Types', href: '/testtypes', icon: Icon.KeyboardSolid },
-		{ text: 'Test Plans', href: '/testplans', icon: Icon.ClipboardCheckSolid },
-		{ text: 'Features', href: '/features', icon: Icon.LightbulbSolid },
-		{ text: 'Customers', href: '/customers', icon: Icon.LightbulbSolid },
-		{ text: 'Test Reports', href: '/testreports', icon: Icon.NewspaperSolid }
-		// Add more links as needed
 	];
 
 	// Navigation links for User Profile
@@ -61,6 +44,7 @@
 	function toggleMenu() {
 		if (open == true) {
 			open = false;
+			slideMenu = false;
 			$menuOpen = false;
 		} else {
 			open = true;
@@ -73,7 +57,7 @@
 {#if open == true}
 	<aside
 		id="logo-sidebar"
-		class="flex-0 fixed left-0 top-0 z-40 h-screen w-64 -translate-x-full border-r border-gray-200 bg-slate-200 pt-4 transition-transform sm:translate-x-0 dark:border-gray-700 dark:bg-gray-800"
+		class="flex-0 fixed left-0 top-0 z-40 h-screen w-52 -translate-x-full border-r border-gray-200 bg-slate-200 pt-4 transition-transform sm:translate-x-0 dark:border-gray-700 dark:bg-gray-800"
 		aria-label="Sidebar"
 	>
 		<div class="flex flex-row items-start">
@@ -119,8 +103,8 @@
 				<Icon.CaretLeftSolid size="lg" class="h-5 w-5 text-gray-500 dark:text-gray-400" />
 			</button>
 		</div>
-
-		<div class="flex h-full flex-col overflow-y-auto bg-slate-100 px-3 pb-4 pt-7 dark:bg-gray-800">
+		<hr class="mb-2"/>
+		<div class="flex h-full flex-col overflow-y-auto bg-slate-100 dark:bg-gray-800">
 			<!-- List of navigation items -->
 			<ul class="space-y-2 font-medium">
 				{#each sidebarItems as item}
@@ -128,7 +112,7 @@
 						<!-- Navigation link -->
 						<a
 							href={item.href}
-							class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+							class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 "
 						>
 							<!-- Dynamic icon rendering using svelte:component -->
 
@@ -137,83 +121,12 @@
 								class="pointer-events-none h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
 							/>
 							<!-- Text label for the navigation item -->
-							<span class="ms-3 flex-1 whitespace-nowrap">{item.text}</span>
+							<span class="ms-3 flex-1 whitespace-nowrap {currentPath == item.href ? 'text-primary-800 dark:text-primary-800' : ''}">{item.text}</span>
 						</a>
 					</li>
 				{/each}
-				<li>
-					<p
-						class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-					>
-						<Icon.DotsHorizontalOutline
-							class="pointer-events-none h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-						/>
-						<span class="ms-3 flex-1 whitespace-nowrap">More</span>
-					</p>
-					<Dropdown
-						transition={slide}
-						params={{ duration: 300, easing: quintOut }}
-						class="rounded-md px-5 py-3 drop-shadow-xl"
-					>
-						{#each navLinks as link}
-							<div class="items-center space-y-1">
-								<DropdownItem href={link.href} class="flex rounded">
-									<svelte:component this={link.icon} class="mr-2" size="md" />
-									{link.text}
-								</DropdownItem>
-							</div>
-						{/each}
-					</Dropdown>
-				</li>
 			</ul>
 			<hr class="mt-2" />
-			<h2 class="text-s my-2 font-sans font-medium text-black dark:text-white">Private area</h2>
-			<ul class="space-y-2 font-medium">
-				<li>
-					<a
-						href="/testplans/new"
-						class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-					>
-						<Icon.UsersGroupSolid
-							class="pointer-events-none h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-						/>
-						<span class="ms-3 flex-1 whitespace-nowrap">Build test plan</span>
-					</a>
-				</li>
-				<li>
-					<a
-						href="/testcases/own"
-						class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-					>
-						<Icon.DatabaseSolid
-							class="pointer-events-none h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-						/>
-						<span class="ms-3 flex-1 whitespace-nowrap">My own test cases</span>
-					</a>
-				</li>
-				<li>
-					<a
-						href="/testcases/favorites"
-						class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-					>
-						<Icon.DatabaseSolid
-							class="pointer-events-none h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-						/>
-						<span class="ms-3 flex-1 whitespace-nowrap">Favorite test cases</span>
-					</a>
-				</li>
-				<li>
-					<a
-						href="/testplans/own"
-						class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-					>
-						<Icon.DatabaseSolid
-							class="pointer-events-none h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-						/>
-						<span class="ms-3 flex-1 whitespace-nowrap">My test plans</span>
-					</a>
-				</li>
-			</ul>
 			{#if loggedIn}
 				<a
 					data-sveltekit-preload-data="tap"
@@ -269,7 +182,7 @@
 					</h1>
 					{#if userInitials != undefined}
 						<button
-							class="mr-1 rounded-lg bg-blue-100 p-2"
+							class="ml-4 mr-1 rounded-lg bg-blue-100 p-2"
 							aria-label=""
 							in:fade={{ duration: 500 }}
 						>
@@ -299,6 +212,7 @@
 						</Popover>
 					{/if}
 				</div>
+				<hr class="mb-2"/>
 				<!-- List of navigation items -->
 				<ul class="space-y-2 font-medium">
 					{#each sidebarItems as item}
@@ -314,75 +228,12 @@
 									class="pointer-events-none h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
 								/>
 								<!-- Text label for the navigation item -->
-								<span class="ms-3 flex-1 whitespace-nowrap">{item.text}</span>
+								<span class="ms-3 flex-1 whitespace-nowrap {currentPath == item.href ? 'text-primary-800 dark:text-primary-800' : ''}">{item.text}</span>
 							</a>
 						</li>
 					{/each}
-					<li>
-						<p
-							class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-						>
-							<Icon.DotsHorizontalOutline
-								class="pointer-events-none h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-							/>
-							<span class="ms-3 flex-1 whitespace-nowrap">More</span>
-						</p>
-						<Dropdown
-							strategy="fixed"
-							transition={slide}
-							params={{ duration: 300, easing: quintOut }}
-							class="rounded-md px-5 py-3 drop-shadow-xl"
-						>
-							{#each navLinks as link}
-								<div class="items-center space-y-1">
-									<DropdownItem href={link.href} class="flex rounded">
-										<svelte:component this={link.icon} class="mr-2" size="md" />
-										{link.text}
-									</DropdownItem>
-								</div>
-							{/each}
-						</Dropdown>
-					</li>
 				</ul>
 				<hr class="mt-2" />
-				<h2 class="text-s my-2 font-sans font-medium text-black dark:text-white">Private area</h2>
-				<ul class="space-y-2 font-medium">
-					<li>
-						<a
-							href="/testplans/new"
-							class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-						>
-							<Icon.UsersGroupSolid
-								class="pointer-events-none h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-							/>
-							<span class="ms-3 flex-1 whitespace-nowrap">Build test plan</span>
-						</a>
-					</li>
-					<li>
-						<a
-							href="/testcases/own"
-							data-sveltekit-preload-code="viewport"
-							class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-						>
-							<Icon.DatabaseSolid
-								class="pointer-events-none h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-							/>
-							<span class="ms-3 flex-1 whitespace-nowrap">My own test cases</span>
-						</a>
-					</li>
-					<li>
-						<a
-							href="/testplans/own"
-							data-sveltekit-preload-code="viewport"
-							class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-						>
-							<Icon.DatabaseSolid
-								class="pointer-events-none h-5 w-5 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
-							/>
-							<span class="ms-3 flex-1 whitespace-nowrap">My test plans</span>
-						</a>
-					</li>
-				</ul>
 				{#if loggedIn}
 					<a
 						data-sveltekit-preload-data="tap"

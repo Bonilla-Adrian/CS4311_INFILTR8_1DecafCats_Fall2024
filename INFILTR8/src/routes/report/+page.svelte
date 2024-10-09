@@ -34,18 +34,22 @@
 	}
 
 	let data = [];
-
+	const headers = new Headers();
+	headers.append('Content-Type', 'application/json');
 	// Fetch data to mimic fetching a file
 	async function testGet() {
 		try {
-			const response = await fetch('report/query/', { method: 'GET' });
+			const response = await fetch('http://127.0.0.1:5000/test', {method: 'GET',});
 			if (!response.ok) {
+				const errorText = await response.text();
 				throw new Error('Failed to fetch data');
 			}
-			data = await response.json();
+			const jsonData = await response.json();
+			data = jsonData; // Ensure jsonData is actually an array if this assignment is made
 			console.log(data);
 		} catch (err) {
-			console.log(err);
+			console.log('Error fetching data:',err);
+			console.log(err)
 		}
 	}
 

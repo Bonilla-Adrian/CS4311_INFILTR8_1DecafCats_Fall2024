@@ -1,33 +1,51 @@
 <script>
 	import '../app.css';
+	import { onMount } from 'svelte';
 	import Navbar from '$lib/components/Navbar.svelte';
 	import Darkmode from '$lib/components/Darkmode.svelte';
 	import { menuOpen } from '$lib/stores.js';
-
-</script>
-
-<svelte:head>
+	import { addNewNotification } from '$lib/stores/notifications.js';
+	import Toast from '$lib/components/Toast.svelte';
+  
+	const mockNotifications = [
+		{ id: 1, message: 'Mock Notification 1', type: 'message', timestamp: '2024-01-01T12:00:00', new: true, timeout: 3000, isPermanent: false }, // Temporary
+		{ id: 2, message: 'Mock Notification 2', type: 'success', timestamp: '2024-01-02T13:00:00', new: true, timeout: 3000, isPermanent: true }, // Permanent
+		{ id: 3, message: 'Mock Notification 3', type: 'error', timestamp: '2024-01-03T14:00:00', new: false, timeout: 3000, isPermanent: true } // Permanent
+	];
+  
+	onMount(() => {
+		console.log('Loading mock notifications...');
+		mockNotifications.forEach(notification => {
+			addNewNotification(notification); // Add each notification (temporary or permanent)
+		});
+		console.log('Mock notifications loaded.');
+	});
+  </script>
+  
+  <svelte:head>
 	<title>INFILTR8</title>
-</svelte:head>
-
-<div class="fixed right-0 z-50 pr-3 pt-2">
+  </svelte:head>
+  
+  <Toast />
+  
+  <div class="fixed right-0 z-50 pr-3 pt-2">
 	<Darkmode />
-</div>
-
-<div class="app flex h-screen bg-gray-50 dark:bg-gray-600">
+  </div>
+  
+  <div class="app flex h-screen bg-gray-50 dark:bg-gray-600">
 	<Navbar />
-	<div class={`p-4 flex-1 bg-gray-50 dark:bg-gray-600 ${$menuOpen ? 'ml-64' : ''} mt-10`}>
-		<main class="">
-			<slot />
-		</main>
+	<div class={`flex-1 bg-gray-50 p-4 dark:bg-gray-600 ${$menuOpen ? 'ml-64' : ''} mt-10`}>
+	  <main class="">
+		<slot />
+	  </main>
 	</div>
-</div>
-
-<style>
+  </div>
+  
+  <style>
 	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
+	  display: flex;
+	  flex-direction: column;
+	  min-height: 100vh;
 	}
-
-</style>
+  </style>
+  
