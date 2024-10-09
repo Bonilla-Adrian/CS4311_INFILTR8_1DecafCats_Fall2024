@@ -38,6 +38,15 @@
         return ipv4Regex.test(ip);
     }
 
+    /*function loadIPList() {
+        ask user for file 
+        make sure file is formatted correctly
+        extract IPs allowed 
+        update IPs selected
+        update IPs allowed and disallowed list
+    }
+    */
+
     //testing purpose
     function addIP() {
         let ipAddress = prompt("Enter the IPv4 address:"); 
