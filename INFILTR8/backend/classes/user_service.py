@@ -28,3 +28,19 @@ def login_user(driver, username, password):
             if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
                 return True
         return False
+    
+def get_user_id(driver, username):
+    user_id = ''
+    with driver.session() as session:
+        user_record = session.read_transaction(find_user_by_username, username)
+        if user_record:
+            user = user_record["a"]
+            user_id = user["<id>"]
+    return user_id
+    
+def check_password(password):
+    if(len(password) < 15):
+        return
+
+    
+    

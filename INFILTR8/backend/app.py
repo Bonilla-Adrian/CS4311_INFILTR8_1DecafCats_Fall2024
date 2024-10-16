@@ -98,6 +98,7 @@ def download_logs(date):
         return send_file(log_file_path, as_attachment=True)
     except FileNotFoundError:
         return jsonify({'error': 'Log file not found'}), 404
+    
 # creates user in the db
 @app.route('/flask-api/create_user', methods=['POST'])
 def create_user_route():
