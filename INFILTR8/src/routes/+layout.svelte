@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import Navbar from '$lib/components/Navbar.svelte';
 	import Darkmode from '$lib/components/Darkmode.svelte';
+	import Colorblind from '$lib/components/Colorblind.svelte';
 	import { menuOpen } from '$lib/stores.js';
 	import { addNewNotification } from '$lib/stores/notifications.js';
 	import Toast from '$lib/components/Toast.svelte';
@@ -58,6 +59,8 @@
 	<Notifications />
 	<!-- Darkmode Toggle -->
 	<Darkmode />
+	<!-- Colorblind Toggle -->
+	<Colorblind />
 </div>
 
 <div class="app flex h-screen bg-gray-50 dark:bg-gray-600">
