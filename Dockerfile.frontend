@@ -1,0 +1,7 @@
+FROM node:20.17.0-alpine
+RUN apk update && apk add git
+RUN git clone https://github.com/Bonilla-Adrian/CS4311_INFILTR8_1DecafCats_Fall2024.git
+WORKDIR /CS4311_INFILTR8_1DecafCats_Fall2024/INFILTR8
+RUN npm install
+EXPOSE 5173:5173
+ENTRYPOINT ["npm", "run", "dev", "--p", "5173"]

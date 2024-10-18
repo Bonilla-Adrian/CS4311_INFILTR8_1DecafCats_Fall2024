@@ -1,0 +1,29 @@
+version: '1'
+services:
+  frontend:
+    image: node:20.17.0-alpine
+    container_name: svelte-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports: 
+      - "5173:5173"
+    depends_on:
+      - neo4j
+  
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j-database
+    build:
+      context: .
+      dockerfile: Dockerfile.neo4j
+    ports:
+      - "7474:7474" 
+      - "7687:7687"
+    environment:
+      NE4J_AUTH: "none"
+    volumes:
+      - neo4jdata:/data
+
+volumes:
+  neo4jdata:

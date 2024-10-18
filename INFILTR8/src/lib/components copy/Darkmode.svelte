@@ -40,8 +40,8 @@
   
   <button on:click={toggleDarkMode}>
     {#if darkMode}
-    <SunSolid color='white' class="h-7 w-7 pointer-events-none" />
+    <SunSolid color='white' class="pointer-events-none" />
     {:else}
-    <MoonSolid class="h-7 w-7 pointer-events-none" />
+    <MoonSolid class="pointer-events-none" />
     {/if}
   </button>

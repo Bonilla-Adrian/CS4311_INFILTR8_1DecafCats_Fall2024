@@ -1,0 +1,9 @@
+# Use python3 -m pip install -r requirements.txt
+Flask==3.0.3
+Flask-Cors==5.0.0
+neo4j==5.25.0
+python-dotenv==1.0.1
+pandas==2.2.3
+category-encoders==2.6.4
+Flask-Session==0.8.0
+bcrypt==4.2.0
