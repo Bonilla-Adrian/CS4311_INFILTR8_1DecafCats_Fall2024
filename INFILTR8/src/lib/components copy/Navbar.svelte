@@ -189,9 +189,7 @@
 				transition:slide={{ duration: 300, easing: quintOut }}
 			>
 				<div class="flex flex-row items-start">
-					<a href="/">
-						<img src={favicon} alt="INFILTR8" class="mb-4 ml-2 mr-auto w-8 rounded drop-shadow-xl" />
-					</a>
+					<img src={favicon} alt="INFILTR8" class="mb-4 ml-2 mr-auto w-8 rounded drop-shadow-xl" />
 					<h1
 						class="oswald ml-2 mr-auto flex-grow text-2xl font-bold text-gray-900 dark:text-white"
 					>
