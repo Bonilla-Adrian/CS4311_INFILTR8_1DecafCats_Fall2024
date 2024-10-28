@@ -6,9 +6,19 @@
     import { InfoCircleSolid, ArrowDownToBracketOutline, ChevronDownOutline, ChevronRightOutline, PenSolid, DownloadSolid, ShareNodesSolid } from 'flowbite-svelte-icons';
     import { onMount } from 'svelte';
     import { session, checkSession } from '$lib/stores/session.js';
+    import { get } from 'svelte/store';
 
     onMount(() => {
         checkSession(); // Check session on page load
+        const userSession = get(session); // Get session details
+
+        // Log the session details to verify username
+        console.log("Session details on mount:", userSession);
+        if (userSession?.username) {
+            console.log("Logged-in user:", userSession.username);
+        } else {
+            console.warn("No user logged in.");
+        }
     });
 
     // pie chart
@@ -91,7 +101,10 @@
 }
 
     async function logButtonClick(detail) {
-        console.log("Button clicked with detail:", detail);  // For debugging
+         // For debugging
+        const userSession = get(session); 
+        const username = userSession?.username || 'Anonymous'; 
+        console.log("Button clicked - Logging action:", detail, "Username:", username);
         try {
             const response = await fetch('/flask-api/log-action', {
                 method: 'POST',
@@ -99,7 +112,7 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    username: 'DummyUser',  // Dummy username for now
+                    username,  // Dummy username for now
                     action: 'ButtonClick',
                     details: detail
                 })

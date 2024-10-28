@@ -6,7 +6,6 @@ class LogManager:
         self.log_directory = "./logs"
         if not os.path.exists(self.log_directory):
             os.makedirs(self.log_directory)
-            self.default_user = "DummyUser"
         print(f"Logs will be saved to: {os.path.abspath(self.log_directory)}") 
 
 
