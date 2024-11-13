@@ -3,21 +3,21 @@ import os
 
 def processAndUpload(driver, username, projectId):
     output_base_dir = os.getcwd()+'/output/'
-    
     ranked = fileRead(output_base_dir+'ranked_entry_points.csv')
     mostInfo = fileRead(output_base_dir+'entrypoint_most_info.csv')
+    print(username)
+    print(projectId)
     query = """
     MATCH (p:Project {projectId: $projectId})-[r:HAS_PROJECT]->(u:Analyst {username: $username}) 
     WITH p
     CREATE (r:Report {name: $reportName, contents: $upload})
     CREATE (r)-[:HAS_FILE]->(p)
-    RETURN count(r) as total
     """
-    
+    print('here')
     with driver.session() as session:
-        numProject = session.run(query, username=username, projectId=projectId, reportName='rankedList',upload=ranked)
-        numProject = session.run(query, username=username, projectId=projectId, reportName='mostInfo',upload=mostInfo)
-        return numProject.single()['total']
+        session.run(query, username=username, projectId=projectId, reportName='rankedList',upload=ranked)
+        session.run(query, username=username, projectId=projectId, reportName='mostInfo',upload=mostInfo)
+    print('done')
 
 def fileRead(filepath):
     wholeCsv = []

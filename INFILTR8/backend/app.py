@@ -13,13 +13,6 @@ import subprocess
 import json
 from datetime import datetime, timezone
 
-
-
-
-
-
-
-
 # Gets all the env variables
 config = dotenv_values(".env")
 URI = config['URI']
@@ -125,7 +118,7 @@ def nessusFileUpload():
 
 @app.route("/flask-api/process-nessus")
 def processNessus():
-    result = nessus_upload.processAndUpload(driver, session['currentProject'],  session['username'])
+    nessus_upload.processAndUpload(driver, session['username'], session['currentProject'])
     return jsonify({'message': 'File has been uploaded'})
     
 
@@ -143,6 +136,8 @@ def receive_ips():
         analysis.disallowed_ips.append(ip['ip'])
     
     analysis.analyze_nessus_file(driver, session['currentProject'] ,session['username'])
+    nessus_upload.processAndUpload(driver, session['username'], session['currentProject'])
+    
     return jsonify({"messaage":"success", "data":ips})
 
 @app.route("/flask-api/get-all-ips", methods=['POST'])
@@ -156,6 +151,24 @@ def get_all_ips():
     except Exception as e:
         print("Error:", e)  # Log the error for debugging
         return jsonify({"error": str(e)}), 500
+
+@app.route("/flask-api/get-ranked-list", methods=['GET'])
+def getRankedList():
+    query = """
+        MATCH (r:Report {name: $name})-[:HAS_FILE]->(p:Project {projectId: $projectId})-[:HAS_PROJECT]->(a:Analyst {username: $username}) 
+        RETURN r.contents AS rank
+    """
+    print(session['currentProject'])
+    with driver.session() as sessionData:
+        result = sessionData.run(query, name="mostInfo", projectId=session['currentProject'], username=session['username'])
+        record = result.single()
+    
+    output = []
+    for line in record['rank']:
+        output.append(line.split())
+    
+    # the first entry is the headers 
+    return jsonify({"message":"success", "data": output})
 
 ### Logging fuctions ###
 
@@ -257,4 +270,4 @@ def log_export():
     for ip in ip_addresses:
         logger.log_action("User", "Export", f"Exporting IP: {ip} in format {export_format}")
 
-    return jsonify({"message": "Export logged successfully"}), 200 
+    return jsonify({"message": "Export logged successfully"}), 200
