@@ -187,32 +187,34 @@
 			</div>
 		</Card>
 
-		<!-- Load Project Card -->
-		<Card class="flex-1 rounded-lg bg-white p-5 shadow-md">
-			<h3 class="mb-4 text-lg font-semibold">Load Project</h3>
-			{#each projects as project}
-				<div
-					class="mb-4 flex cursor-pointer items-center justify-between rounded-lg bg-gray-100 p-4 shadow dark:bg-gray-800 mb-4"
-					on:click={() => loadProject(project)} on:click={() => logButtonClick(`${project.name} clicked`)}
-				>
-					<div class="flex items-center gap-3">
-						<!-- Font Awesome folder icon -->
-						<i class="fas fa-folder text-lg"></i>
-						<div>
-							<span class="block font-medium">{project.name}</span>
-							<span class="text-sm text-gray-500">{project.items} items • {project.size}</span>
-						</div>
-					</div>
-					<span class="text-gray-500">⋮</span>
-				</div>
-			{/each}
-    
-	    </Card>
+		<!-- Schedule Analysis Card -->
+        <Card class="flex-1 rounded-lg bg-white p-5 shadow-md">
+            <h3 class="mb-4 text-lg font-semibold">Schedule Analysis</h3>
+            <p class="mb-4 text-sm text-gray-500">Select a time frame to schedule your analysis.</p>
+            <label class="block text-sm text-gray-700 font-medium">Choose Time Frame:</label>
+            <select class="mt-2 p-2 border rounded-lg w-full mb-4">
+                <option value="1_hour">1 Hour</option>
+                <option value="6_hours">6 Hours</option>
+                <option value="12_hours">12 Hours</option>
+                <option value="24_hours">24 Hours</option>
+            </select>
+            <button
+                class="mt-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
+                on:click={scheduleAnalysis}
+            >
+                Schedule Analysis
+            </button>
+        </Card>
+        
 	</Card>
 
 	<!-- Start Testing button placed below the layout -->
-	<button
-		class="mt-6 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
-		on:click={startAnalysis}>Start Testing</button
-	>
+	<div class="flex space-x-4">
+        <button
+            class="mt-6 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
+            on:click={startAnalysis}>
+            Start Testing
+        </button>
+    
+    </div>
 </div>
