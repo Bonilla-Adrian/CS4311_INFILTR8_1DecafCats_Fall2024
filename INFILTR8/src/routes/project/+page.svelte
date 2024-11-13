@@ -272,6 +272,29 @@
                 </div>
             {/each}
         </Card>
+
+        <!-- Schedule Analysis -->
+        <Card class="flex-1 rounded-lg bg-white p-5 shadow-md">
+            <h3 class="mb-4 text-lg font-semibold">Schedule Analysis</h3>
+            <p class="mb-4 text-sm text-gray-500">Select a time frame to schedule your analysis.</p>
+            <label class="block text-sm text-gray-700 font-medium">Choose Time Frame:</label>
+            <select class="mt-2 p-2 border rounded-lg w-full mb-4">
+                <option value="1_hour">1 Hour</option>
+                <option value="6_hours">6 Hours</option>
+                <option value="12_hours">12 Hours</option>
+                <option value="24_hours">24 Hours</option>
+            </select>
+            <button
+                class="mt-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
+                on:click={scheduleAnalysis}
+            >
+                Schedule Analysis
+            </button>
+        </Card>
+
+
+
+
     </Card>
 
 	<!-- Start Testing button placed below the layout -->
