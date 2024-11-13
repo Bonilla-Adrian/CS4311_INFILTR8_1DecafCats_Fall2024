@@ -14,7 +14,7 @@
         if (response.ok) {
             session.set({ logged_in: false, username: '' }); // Reset session store
             console.log("Logged out successfully");
-            goto('/login');
+            goto('/');
         } else {
             console.error('Failed to logout');
         }

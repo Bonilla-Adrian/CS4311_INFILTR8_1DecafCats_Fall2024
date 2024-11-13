@@ -68,6 +68,16 @@ def createProject(driver, username, projectName, fileName, status, ips, exploits
         projectId = result.single()["projectId"]
         return projectId
 
+def updateProjectStatus(driver, projectId, username, status):
+    query = """
+    MATCH (p:Project {projectId: $projectId, user: $username})
+    SET p.status = $status
+    RETURN p.status AS updatedStatus
+    """
+    
+    with driver.session() as session:
+        result = session.run(query, projectId=projectId, username=username, status=status)
+        return result.single()['updatedStatus']
 
 def getAllProjectIds(driver, username):
     query = "MATCH (p:Project)-[:HAS_PROJECT]->(a:Analyst{username: $username}) RETURN p.projectId AS projectIds"

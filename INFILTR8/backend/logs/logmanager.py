@@ -13,7 +13,7 @@ class LogManager:
     def _get_log_file_name(self):
         # generates a log file name based on the current date
         today = datetime.now().strftime("%Y-%m-%d")
-        return os.path.join(self.log_directory, f"logs_{today}.txt")
+        return os.path.join(self.log_directory, f"logs_{today}.log")
 
     # logs an action to the daily log file
 

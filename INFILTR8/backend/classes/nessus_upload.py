@@ -1,9 +1,11 @@
 import csv
+import os
 
-def processAndUpload(driver, username, projectId, filepath):
-    ranked = fileRead('/home/erik/utep-fall-24/CS4311_INFILTR8_1DecafCats_Fall2024/INFILTR8/backend/output/ranked_entry_points.csv')
-    mostInfo = fileRead('/home/erik/utep-fall-24/CS4311_INFILTR8_1DecafCats_Fall2024/INFILTR8/backend/output/entrypoint_most_info.csv')
+def processAndUpload(driver, username, projectId):
+    output_base_dir = os.getcwd()+'/output/'
     
+    ranked = fileRead(output_base_dir+'ranked_entry_points.csv')
+    mostInfo = fileRead(output_base_dir+'entrypoint_most_info.csv')
     query = """
     MATCH (p:Project {projectId: $projectId})-[r:HAS_PROJECT]->(u:Analyst {username: $username}) 
     WITH p

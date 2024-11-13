@@ -1,39 +1,23 @@
 <script>
   import { EyeSolid } from 'flowbite-svelte-icons';
-  import { darkMode } from '$lib/stores.js';
+  import { darkMode, colorblindMode } from '$lib/stores.js';
   import { onMount } from 'svelte';
 
-  export let colorblindMode = "normal"; // Allow external binding
-  export let showIcon = true; // Control whether to show the icon, default to true
+  export let showIcon = true;
 
   onMount(() => {
-    if (typeof window !== 'undefined' && localStorage.getItem('colorblind-mode')) {
-      colorblindMode = localStorage.getItem('colorblind-mode');
+    if (typeof window !== 'undefined') {
+      const savedMode = localStorage.getItem('colorblind-mode') || "Normal";
+      colorblindMode.set(savedMode);
     }
-    applyColorblindFilter();
   });
 
-  const applyColorblindFilter = () => {
-    const root = document.documentElement;
-    if (colorblindMode === 'normal') {
-      root.style.filter = 'none';
-    } else if (colorblindMode === 'protanopia') {
-      root.style.filter = 'url(#protanopia-filter)';
-    } else if (colorblindMode === 'deuteranopia') {
-      root.style.filter = 'url(#deuteranopia-filter)';
-    }
-  };
-
-  // Update colorblind mode and save to localStorage
-  $: if (typeof window !== 'undefined') {
-    localStorage.setItem('colorblind-mode', colorblindMode);
-    applyColorblindFilter();
-  }
-
   const toggleColorblindMode = () => {
-    colorblindMode = colorblindMode === 'normal' ? 'protanopia' :
-                     colorblindMode === 'protanopia' ? 'deuteranopia' :
-                     'normal';
+    colorblindMode.update((currentMode) =>
+      currentMode === 'Normal' ? 'Protanopia' :
+      currentMode === 'Protanopia' ? 'Deuteranopia' :
+      'Normal'
+    );
   };
 </script>
 
@@ -47,16 +31,16 @@
   </filter>
 </svg>
 
-<!-- Conditionally render the icon if showIcon is true -->
 {#if showIcon}
-  <button on:click={toggleColorblindMode}>
-    {#if colorblindMode === 'normal'}
-      <EyeSolid color={`${$darkMode ? 'white' : 'black'}`} class="h-7 w-7 pointer-events-none" /> <!-- Normal mode icon -->
-    {:else if colorblindMode === 'protanopia'}
-      <EyeSolid color='#ff4c4c' class="h-7 w-7 pointer-events-none" /> <!-- Protanopia mode icon -->
-    {:else if colorblindMode === 'deuteranopia'}
-      <EyeSolid color='#4caf50' class="h-7 w-7 pointer-events-none" /> <!-- Deuteranopia mode icon -->
+  <button on:click={toggleColorblindMode} aria-label="Toggle Colorblind Mode">
+    {#if $colorblindMode === 'Normal'}
+      <EyeSolid color={$darkMode ? 'white' : 'black'} class="h-7 w-7 pointer-events-none" />
+    {:else if $colorblindMode === 'Protanopia'}
+      <EyeSolid color='#ff4c4c' class="h-7 w-7 pointer-events-none" />
+    {:else if $colorblindMode === 'Deuteranopia'}
+      <EyeSolid color='#4caf50' class="h-7 w-7 pointer-events-none" />
+    {:else}
+      <EyeSolid color="gray" class="h-7 w-7 pointer-events-none" /> <!-- Fallback icon to avoid disappearing -->
     {/if}
   </button>
 {/if}
-

@@ -11,44 +11,65 @@ export const ipsDisallowed = writable([]);
 
 // Function to send store data to the backend
 export const sendIPSToBackend = async () => {
-    const data = get(ipsDisallowed);  
-    try {
-      const response = await fetch('/flask-api/get-ips', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-      const result = await response.json();
-      console.log('Data sent to backend:', result);
-    } catch (error) {
-      console.error('Error sending data:', error);
-    }
-};
+  const disallowedData = get(ipsDisallowed).map(ipInstance => ipInstance.ip);
+  const payload = {
+      ips: disallowedData.join(","), // Comma-separated string of disallowed IPs
+  };
 
+  // Log payload to confirm data being sent
+  console.log('Sending disallowed IPs to backend:', payload);
+
+  try {
+      const response = await fetch('/flask-api/get-ips', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+      console.log('Data sent to backend successfully:', result);
+  } catch (error) {
+      console.error('Error sending data to backend:', error);
+  }
+};
+export function updateAllowedAndDisallowedIPs(allIps, selectedIps) {
+  // Filter to find selected and disallowed IPs
+  const selectedIpInstances = allIps
+      .filter(ip => selectedIps.includes(ip.ip))
+      .map(ip => new IP(ip));
+
+  const disallowedIpInstances = allIps
+      .filter(ip => !selectedIps.includes(ip.ip))
+      .map(ip => new IP(ip));
+
+  // Update the stores
+  ipsAllowed.set(selectedIpInstances);
+  ipsDisallowed.set(disallowedIpInstances);
+}
   //should be ran once a nessus file is uploaded
   export async function getIPsFromBackend(fileName) {
+    const ipData = get(ipsDisallowed).map(ipInstance => ipInstance.ip);  // Assuming IP has an `ip` property
+    const payload = {
+        project_id: 1, // Or dynamically assign this based on the project
+        ips: ipData.join(","), // Convert array to comma-separated string
+        exploits: ["SQL Injection", "DDOS Attack"] // Example exploit types
+    };
     try {
-        const response = await fetch("/flask-api/get-all-ips", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({name: fileName})
+        const response = await fetch('/flask-api/get-ips', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
         });
-
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json(); // Parse JSON response
-        console.log("IPs received from backend:", data);
-        console.log(typeof(data))
-        addIPstoStore(data); // Update the store with received IPs
-        return data
+        const result = await response.json();
+        console.log('Data sent to backend:', result);
     } catch (error) {
-        console.error("There was an error retrieving IPs from the backend:", error);
+        console.error('Error sending data:', error);
     }
-  };
+};
 
   function addIPstoStore(data) {
     const ipInstances = data.map(ipAddress => new IP(ipAddress)); // Create IP instances
@@ -68,5 +89,24 @@ darkMode.subscribe((value) => {
   if (typeof window !== "undefined") {
     localStorage.setItem("color-theme", value ? "dark" : "light");
     document.documentElement.classList.toggle("dark", value);
+  }
+});
+
+// Colorblind Mode Logic
+const savedColorMode = (typeof window !== 'undefined' && localStorage.getItem("colorblind-mode")) || "Normal";
+export const colorblindMode = writable(savedColorMode);
+
+colorblindMode.subscribe((value) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem("colorblind-mode", value);
+
+    // Apply the appropriate colorblind filter
+    const root = document.documentElement;
+    root.style.filter = 'none';
+    if (value === 'Protanopia') {
+      root.style.filter = 'url(#protanopia-filter)';
+    } else if (value === 'Deuteranopia') {
+      root.style.filter = 'url(#deuteranopia-filter)';
+    }
   }
 });

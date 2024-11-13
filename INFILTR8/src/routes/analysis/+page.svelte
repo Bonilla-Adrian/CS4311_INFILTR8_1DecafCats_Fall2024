@@ -2,19 +2,46 @@
     import { SystemInfo } from '../../lib/SystemInfo.js';
     import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     import { Chart, Card, A, Button, Dropdown, DropdownItem, Popover, Tooltip, Progressbar } from 'flowbite-svelte';
-    import { InfoCircleSolid, ArrowDownToBracketOutline, ChevronDownOutline, ChevronRightOutline, PenSolid, DownloadSolid, ShareNodesSolid } from 'flowbite-svelte-icons';
+    import { InfoCircleSolid, ArrowDownToBracketOutline, ChevronDownOutline, ChevronRightOutline, PenSolid, DownloadSolid, ShareNodesSolid, ShareNodesOutline } from 'flowbite-svelte-icons';
     import { onMount, onDestroy } from 'svelte';
-    import { session, checkSession } from '$lib/stores/session.js';
 
     let tableData = [];
     let series = [0, 0, 0]; 
     let latestProject = null;
+    let username = "";
+    
+    async function checkSession(){
+        try{
+            const response = await fetch('/flask-api/check_session',{
+                method: 'GET',
+                credentials: 'include'
+            });
+            if (response.ok){
+                const sessionData = await response.json();
+                if (sessionData.logged_in){
+                    username = sessionData.username;
+                }else{
+                    console.error("User is not logged in");
+                }
+            } else{
+                console.error("Failed to fetch session data");
+            }
+
+        }catch (error){
+            console.error("Error checking session:", error);
+        }
+    }
 
     onMount(() => {
-        const intervalId = setInterval(async () => {
-            await getTableData();
-        }, 1000); 
+        const initialize = async () => {
+            await checkSession();
+            setInterval(async () => {
+                await getTableData();
+            }, 500);
+        }
+        initialize();
     });
+
 
     async function logButtonClick(detail) {
         console.log("Button clicked with detail:", detail);  // For debugging
@@ -25,7 +52,7 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    username: 'DummyUser',  // Dummy username for now
+                    username: username || 'Anonymous',  // Dummy username for now
                     action: 'ButtonClick',
                     details: detail
                 })
@@ -55,7 +82,7 @@
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = `logs_${date}.txt`;
+            a.download = `logs_${date}.log`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -255,7 +282,26 @@
         <div id="middle" class="flex-top float-left  w-8/12  py-0">
             <!-- start of Summary-->
             <div id="bottomSettings" class="py-8 shadow-2xl dark:bg-gray-900">
-                <h2 class="text-center font-bold text-xl leading-none text-gray-900 dark:text-white me-1 dark:bg-gray-900" >Summary</h2>
+                <h2 class="flex justify-center items-center text-center font-bold text-xl leading-none text-gray-900 dark:text-white me-1 dark:bg-gray-900">
+                    <span class="flex-1 text-center">Summary</span>
+                    <button Dropdown button ChevronDownOutline class="p-0 bg-transparent border-none cursor-pointer outline-none ml-auto" aria-label="Filter Icon">
+                      <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M18.796 4H5.204a1 1 0 0 0-.753 1.659l5.302 6.058a1 1 0 0 1 .247.659v4.874a.5.5 0 0 0 .2.4l3 2.25a.5.5 0 0 0 .8-.4v-7.124a1 1 0 0 1 .247-.659l5.302-6.059c.566-.646.106-1.658-.753-1.658Z"/>
+
+                      </svg>
+                    </button>
+                    <Dropdown>
+                        <DropdownItem>Low Vulnerability</DropdownItem>
+                        <DropdownItem>Mid Vulnerability</DropdownItem>
+                        <DropdownItem>High Vulnerability</DropdownItem>
+                        <DropdownItem></DropdownItem>
+                      </Dropdown>
+                      
+                  </h2>
+                  
+                  
+                
+                  
                 <div class="overflow-y-auto h-11  max-w-2xs lg:h-[calc(100vh-30rem)] lg:block dark:bg-gray-800 lg:me-0 lg:sticky top-2 px-2 dark:text-white">
                     <p>Current Testing</p>
                     <p>Weak password Attack</p>
@@ -298,6 +344,7 @@
 
 
                     <p> {timestamp}</p>
+                    
                 </div>
             </div>
         </div>

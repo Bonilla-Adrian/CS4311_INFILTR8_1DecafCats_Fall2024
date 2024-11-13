@@ -2,16 +2,17 @@
   import { onMount } from 'svelte';
   import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
   import { Label, Select, Button } from 'flowbite-svelte';
-  import { darkMode } from '$lib/stores.js'; // Import dark mode store
+  import { darkMode, colorblindMode } from '$lib/stores.js'; // Import dark mode store
 
-  let selectedColorMode = "normal"; // Default colorblind mode
+
+  let selectedColorMode = $colorblindMode;
   let selectedFontSize = "Regular"; // Default font size
   let selectedTheme = "light"; // Default theme selection
 
   const colorModes = [
-    { value: 'normal', name: "Normal" },
-    { value: 'protanopia', name: "Protanopia" },
-    { value: 'deuteranopia', name: "Deuteranopia" },
+    { value: 'Normal', name: "Normal" },
+    { value: 'Protanopia', name: "Protanopia" },
+    { value: 'Deuteranopia', name: "Deuteranopia" },
   ];
 
   const fontSizes = [
@@ -41,6 +42,14 @@
     darkMode.subscribe((value) => {
       selectedTheme = value ? 'Dark' : 'Light';
     });
+
+    colorblindMode.subscribe((value) => {
+      if (typeof window !== 'undefined') {
+      // Save the current colorblind mode to localStorage
+      localStorage.setItem("colorblind-mode", value);
+      }
+    });
+
   });
 
   function applyFontSize(size) {
@@ -104,6 +113,7 @@
 
     applyFontSize("Regular");
     updateTheme("Light");
+    colorblindMode.set("Normal");
   }
 
   $: applyFontSize(selectedFontSize);
@@ -129,7 +139,7 @@
               <TableBodyCell class="text-right px-6" style="width: 30%;">
                 <Label>
                   Select an option
-                  <Select items={colorModes} bind:value={selectedColorMode} on:change={() => logButtonClick('Color mode click')}/>
+                  <Select items={colorModes} bind:value={$colorblindMode} on:change={() => logButtonClick('Color mode click')} />
                 </Label>
               </TableBodyCell>
             </TableBodyRow>

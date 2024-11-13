@@ -181,11 +181,7 @@
           console.warn(message);
           return;
       }
-      if (possibleEntryPoints.length === 0) {
-          message = "No entry points found in the Nessus file. Please upload a valid file.";
-          console.warn(message);
-          return;
-      }
+
       let ips
       await ipList.then(function(result){ips = result})
       const projectData = {
@@ -255,12 +251,13 @@
             <Heading tag="h1" class="mb-4 text-3xl font-extrabold text-center md:text-5xl lg:text-6xl">
             <Span gradient>WELCOME TO INFILTR8</Span>
             </Heading>
-            <P>Please select from the following to get started on your project.</P>
             <!-- Dropzone component for file uploads -->
-            <input type="file" accept=".nessus" on:change="{handleChange}" />
-            <form>
-                <Input type="text" id="first_name" placeholder="Enter Project Name" required />
-            </form>
+            <div class="justify-between">
+                <input type="file" accept=".nessus" on:change="{handleChange}" />
+                <form >
+                    <Input class="text-center" type="text" id="first_name" placeholder="Enter Project Name" required />
+                </form>
+            </div>
             <!-- <input bind:value={name} placeholder="Enter Project Name" /> -->
             <div class="flex flex-row justify-between w-full mt-4">
                 <div class="flex flex-col mr-8">
@@ -273,11 +270,11 @@
                             <GradientButton on:click={() => { logButtonClick('Create project clicked'); createProject(); }}>Create Project</GradientButton>           
                         </div>
                     </div>
-                    <div class="w-full">
+                    <div>
                         <h2 class="text-2xl font-semibold mb-4 text-center">Project List</h2>
         
                         {#if projects.length > 0}
-                            <Table hoverable={true} class="w-full">
+                            <Table hoverable={true} class="shrink">
                                 <TableHead>
                                     <TableHeadCell>Project Name</TableHeadCell>
                                     <TableHeadCell>Project ID</TableHeadCell>
@@ -287,9 +284,9 @@
                                 <TableBody>
                                     {#each projects as project}
                                         <TableBodyRow>
-                                        <TableBodyCell>{project.projectname}</TableBodyCell>
+                                        <TableBodyCell>{project.projectName}</TableBodyCell>
                                         <TableBodyCell>{project.projectId}</TableBodyCell>
-                                        <TableBodyCell>{project.ips ? project.ips.join(', ') : ''}</TableBodyCell>
+                                        <TableBodyCell class="text-wrap">{project.ips ? project.ips.join(', ') : ''}</TableBodyCell>
                                         <TableBodyCell>
                                         {#if Array.isArray(project.exploits)}
                                             {project.exploits.join(', ')}

@@ -40,19 +40,21 @@
 	<Colorblind showIcon={true} />
 </div>
 
-<div class="app flex h-screen bg-gray-50 dark:bg-gray-600">
+<div class="app flex h-screen bg-gradient-to-r bg-white dark:from-gray-600 dark:to-slate-800">
 	<Navbar />
-	<div class={`flex-1 bg-gray-50 p-4 dark:bg-gray-600 ${$menuOpen ? 'ml-64' : ''} mt-10`}>
+	<div class={`flex-1 p-4 transition-all duration-300 ${$menuOpen ? 'ml-64' : ''} mt-10`}>
 		<main>
 			<slot />
 		</main>
 	</div>
 </div>
 
+
+
 <style>
 	.app {
 		display: flex;
 		flex-direction: column;
-		min-height: 300vh;
+		min-height: fit-content;
 	}
 </style>
