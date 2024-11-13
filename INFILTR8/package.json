@@ -45,6 +45,7 @@
 	"dependencies": {
 		"@sveltejs/adapter-static": "^3.0.5",
 		"dotenv": "^16.4.5",
-		"neo4j-driver": "^5.24.1"
+		"neo4j-driver": "^5.24.1",
+		"papaparse": "^5.4.1"
 	}
 }
