@@ -122,6 +122,12 @@
         }
     }
 
+
+    function scheduleAnalysis(){
+        
+    }
+
+
     async function startAnalysis() {
         if (!selectedProject || !selectedProject.id) {
             alert("Please select a project with a valid ID before starting testing.");
