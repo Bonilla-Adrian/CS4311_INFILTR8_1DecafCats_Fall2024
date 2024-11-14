@@ -1,12 +1,16 @@
-<!-- src/routes/+page.svelte -->
 <script>
 	import { Button, Card } from 'flowbite-svelte';
 	import { Heading, P, Span } from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
+	import { session } from '$lib/stores/session.js';
 
-	// Function to navigate to the login page
-	function goToLogin() {
-		goto('/login');
+	// Function to navigate based on login status
+	function handleNavigation() {
+		if ($session.logged_in) {
+			goto('/dashboard');
+		} else {
+			goto('/login');
+		}
 	}
 </script>
 
@@ -20,12 +24,16 @@
 
 		<!-- Description using Flowbite Svelte Paragraph component -->
 		<P class="text-lg text-gray-700 text-center">
-			Welcome to <span class="font-bold">INFILTR8</span>. Please log in.
+			Welcome to <span class="font-bold">INFILTR8</span>.
 		</P>
 
 		<!-- Button using Flowbite Svelte Button component -->
-		<Button color="primary" pill on:click={goToLogin} class="w-full hover:scale-105 transition-transform duration-150">
-			Proceed to Login
+		<Button color="primary" pill on:click={handleNavigation} class="w-full hover:scale-105 transition-transform duration-150">
+			{#if $session.logged_in}
+				Proceed to Dashboard
+			{:else}
+				Proceed to Login
+			{/if}
 		</Button>
 	</Card>
 </main>

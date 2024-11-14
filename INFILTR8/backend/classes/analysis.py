@@ -30,8 +30,8 @@ def analyze_nessus_file(driver, projectId, username):
     project.updateProjectStatus(driver, projectId, username, 10)  # Update to 10%
 
     # Debugging: Print DataFrame shape and head to verify final output
-    print(f"DataFrame shape: {df.shape}")
-    print(df.head())
+    # print(f"DataFrame shape: {df.shape}")
+    # print(df.head())
 
     # Encode categorical variables
     plugin_family = pd.get_dummies(df['pluginFamily'])
@@ -57,8 +57,8 @@ def analyze_nessus_file(driver, projectId, username):
     encoded_data = pd.concat([encoded_data, viable_exploit], axis=1)
     project.updateProjectStatus(driver, projectId, username, 55)  # Update to 55%
     # Debugging: Print the encoded DataFrame
-    print('\nBelow is the encoded data\n')
-    print(encoded_data.head())
+    # print('\nBelow is the encoded data\n')
+    # print(encoded_data.head())
 
     # Analyze entry points
     # Filter out entries with "Port 0" for entry points analysis
@@ -90,33 +90,33 @@ def analyze_nessus_file(driver, projectId, username):
 
     # Sort by the combined score
     ranked_entry_points = entry_point_info.sort_values(by='combined_score', ascending=False)
-    print(type(ranked_entry_points))
+    # print(type(ranked_entry_points))
     project.updateProjectStatus(driver, projectId, username, 80)  # Update to 80%
 
     # Display the ranked entry points
-    print("\nRanked entry points based on combined score:")
-    print(ranked_entry_points.head(10))
+    # print("\nRanked entry points based on combined score:")
+    # print(ranked_entry_points.head(10))
 
     # Save the result to a CSV file
     ranked_entry_points.to_csv(ranked_entry_points_path, index=False)
-    print(f"\nRanked entry points saved to {ranked_entry_points_path}")
+    # print(f"\nRanked entry points saved to {ranked_entry_points_path}")
     project.updateProjectStatus(driver, projectId, username, 90)  # Update to 90%
 
     # Save the entry points with most information
     entry_point_info_sorted = filtered_df.groupby(['ip', 'port']).size().reset_index(name='vulnerability_count').sort_values(by='vulnerability_count', ascending=False)
     entry_point_info_sorted.to_csv(entrypoint_most_info_path, index=False)
-    print(f"\nTop entry points saved to {entrypoint_most_info_path}")
+    # print(f"\nTop entry points saved to {entrypoint_most_info_path}")
 
     # Filter entries with Port 0 from the data_with_exploits.csv
     port_0_entries = df[df['port'] == '0']
 
     # Print out or save the filtered entries
-    print("\nEntries mapped to Port 0:\n")
-    print(port_0_entries)
+    # print("\nEntries mapped to Port 0:\n")
+    # print(port_0_entries)
 
     # Save to a separate CSV for review
     port_0_entries.to_csv(port_0_entries_path, index=False)
-    print(f"\nPort 0 entries saved to {port_0_entries_path}")
+    # print(f"\nPort 0 entries saved to {port_0_entries_path}")
     project.updateProjectStatus(driver, projectId, username, 'reports')  # Final update to 100%
 
 ## used for testing

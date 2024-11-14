@@ -6,19 +6,13 @@ from dotenv import dotenv_values
 from classes import database, analysis, parser
 from flask import send_file
 from logs.logmanager import LogManager
-from classes import user_service, project, nessus_upload
+from classes import user_service, project, nessus_upload, result
 import bcrypt
 from flask_session import Session
 import subprocess
 import json
 from datetime import datetime, timezone
-
-
-
-
-
-
-
+import secrets
 
 # Gets all the env variables
 config = dotenv_values(".env")
@@ -50,7 +44,7 @@ driver = neo4j.driver_make()
 
 @app.route("/flask-api/test")
 def test():
-    return jsonify({'info': 'Test to makes sure everything is working'})
+    return jsonify({'info': 'Test to makes sure everything is working', 'projectId': session['currentProject']})
 
 @app.route("/flask-api/test2")
 def test2():
@@ -125,24 +119,34 @@ def nessusFileUpload():
 
 @app.route("/flask-api/process-nessus")
 def processNessus():
-    result = nessus_upload.processAndUpload(driver, session['currentProject'],  session['username'])
-    return jsonify({'message': 'File has been uploaded'})
+    analysis.analyze_nessus_file(driver, session['currentProject'], session['username'])
+    nessus_upload.processAndUpload(driver, session['username'], session['currentProject'])
+    return jsonify({'message': 'Result files have been uploaded'})
     
-
 # Sends the entry points
+@app.route("/flask-api/data-with-exploits")
+def dataExploits():
+    dataEx = result.getResult(driver, 'dataExploits', session['currentProject'], session['username'])
+    return jsonify({'message': 'success', 'data': dataEx})
+
 @app.route("/flask-api/ranked-entry-points")
 def rankedEntryPoints():
-    return
+    rankedEntry = result.getResult(driver, 'rankedEntry', session['currentProject'], session['username'])
+    return jsonify({'message': 'success', 'data': rankedEntry})
+
+@app.route("/flask-api/entry-most-info")
+def entryMostInfo():
+    mostInfo = result.getResult(driver, 'mostInfo', session['currentProject'], session['username'])
+    return jsonify({'message': 'success', 'data': mostInfo})
+
+@app.route("/flask-api/port-0-entries")
+def portZeroEntries():
+    zeroEntries = result.getResult(driver, 'portZero', session['currentProject'], session['username'])
+    return jsonify({'message': 'success', 'data': zeroEntries})
+
 #gets ips from the analysis
 @app.route('/flask-api/get-ips', methods=['POST'])
 def receive_ips():
-    ips = request.json
-    analysis.disallowed_ips=[]
-    # Run analysis.py with the data as a JSON command-line argument
-    for ip in ips:
-        analysis.disallowed_ips.append(ip['ip'])
-    
-    analysis.analyze_nessus_file(driver, session['currentProject'] ,session['username'])
 
     try:
         data = request.get_json(force=True)
@@ -177,7 +181,7 @@ def receive_ips():
         return jsonify({"error": str(e)}), 500
 
 #gets unqiue ips from the file
-@app.route("/flask-api/get-all-ips", methods=['POST'])
+@app.route("/flask-api/get-ips-from-nessus", methods=['POST'])
 def get_all_ips():
     data = request.get_json()
     fileName = data.get('name')
@@ -225,18 +229,28 @@ def download_logs(date):
 @app.route('/flask-api/create_user', methods=['POST'])
 def create_user_route():
     data = request.get_json()
-    first_name = data['first_name']
-    last_name = data['last_name']
     username = data['username']
     password = data['password']
+
+    # Generate a secure, random key for account recovery
+    recovery_key = secrets.token_urlsafe(16)  # Generates a 16-byte secure token
 
     # Hash the password
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     with driver.session() as session:
-        session.write_transaction(user_service.create_user, username, first_name, last_name, hashed_password.decode('utf-8'))
+        session.write_transaction(
+            user_service.create_user, 
+            username, 
+            hashed_password.decode('utf-8'), 
+            recovery_key
+        )
     
-    return jsonify({"status": "User created successfully"})
+    # Return the recovery key to the client for displaying to the user
+    return jsonify({
+        "status": "User created successfully",
+        "recovery_key": recovery_key
+    })
 
 # checks login information 
 @app.route('/flask-api/login', methods=['POST'])

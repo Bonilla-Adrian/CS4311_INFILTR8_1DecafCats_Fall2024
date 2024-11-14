@@ -48,7 +48,7 @@ export function updateAllowedAndDisallowedIPs(allIps, selectedIps) {
   ipsAllowed.set(selectedIpInstances);
   ipsDisallowed.set(disallowedIpInstances);
 }
-  //should be ran once a nessus file is uploaded
+  //should be ran once a nessus file is uploaded NOTE BEING USED
   export async function getIPsFromBackend(fileName) {
     const ipData = get(ipsDisallowed).map(ipInstance => ipInstance.ip);  // Assuming IP has an `ip` property
     const payload = {
@@ -57,7 +57,7 @@ export function updateAllowedAndDisallowedIPs(allIps, selectedIps) {
         exploits: ["SQL Injection", "DDOS Attack"] // Example exploit types
     };
     try {
-        const response = await fetch('/flask-api/get-ips', {
+      const response = await fetch('/flask-api/get-all-ips', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -69,6 +69,29 @@ export function updateAllowedAndDisallowedIPs(allIps, selectedIps) {
     } catch (error) {
         console.error('Error sending data:', error);
     }
+};
+
+// Used in the dashboard to get the ips from the uploaded nessus file
+export async function getIPsForProject(fileName) {
+  try {
+      const response = await fetch("/flask-api/get-ips-from-nessus", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({name: fileName})
+      });
+
+      if (!response.ok) {
+          throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json(); // Parse JSON response
+      console.log("IPs received from backend:", data);
+      console.log(typeof(data))
+      addIPstoStore(data); // Update the store with received IPs
+      return data
+  } catch (error) {
+      console.error("There was an error retrieving IPs from the backend:", error);
+  }
 };
 
   function addIPstoStore(data) {

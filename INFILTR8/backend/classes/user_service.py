@@ -2,17 +2,17 @@ from neo4j import GraphDatabase
 import bcrypt
 
 
-def create_user(tx, username, first_name, last_name, hashed_password):
+def create_user(tx, username, hashed_password, recovery_key):
     query = (
         """
         MERGE (a:Analyst {username: $username})
-        ON CREATE SET a.first_name = $first_name, a.last_name = $last_name, a.password = $hashed_password
+        ON CREATE SET a.password = $hashed_password, a.recovery_key = $recovery_key
         MERGE (u:User)
         CREATE (a)-[:IS_A]->(u)
         """
-        )
+    )
     
-    tx.run(query, first_name=first_name, last_name=last_name, username=username, hashed_password=hashed_password)
+    tx.run(query, username=username, hashed_password=hashed_password, recovery_key=recovery_key)
 
 def find_user_by_username(tx, username):
     query = "MATCH (a:Analyst {username: $username}) RETURN a"

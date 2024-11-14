@@ -8,7 +8,7 @@
     import { InfoCircleSolid } from 'flowbite-svelte-icons';
     import { Heading, P, Span, GradientButton } from 'flowbite-svelte';
     import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
-    import { getIPsFromBackend } from '$lib/stores.js'
+    import { getIPsForProject } from '$lib/stores.js'
 	import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
     
@@ -116,7 +116,7 @@
                 let fetchP = uploadNessusFile()
                 fetchP.then((response) => {
                   // put error handle stuff here
-                  ipList = getIPsFromBackend(nessusFile.name)
+                  ipList = getIPsForProject(nessusFile.name)
                 })
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -145,7 +145,7 @@
 
   async function uploadParse() {
     let fetchP = uploadNessusFile()
-    await fetchP.then(ipList = getIPsFromBackend(nessusFile.name))
+    await fetchP.then(ipList = getIPsForProject(nessusFile.name))
   }
 
 

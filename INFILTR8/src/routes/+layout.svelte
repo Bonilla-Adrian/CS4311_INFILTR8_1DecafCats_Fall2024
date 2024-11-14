@@ -8,6 +8,7 @@
 	import Notifications from '$lib/components/Notifications.svelte';
 	import { session, checkSession } from '$lib/stores/session.js';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
 	// Ensure dark mode class is applied on client-side only
 	onMount(() => {
@@ -22,6 +23,7 @@
 		// Check session state when the component mounts
 		checkSession();
 	});
+	
 </script>
 
 <svelte:head>
@@ -29,11 +31,15 @@
 </svelte:head>
 
 <!-- Toast notifications for temporary alerts -->
-<Toast />
+{#if $session.logged_in}
+	<Toast />
+{/if}
 
 <div class="fixed right-0 z-50 flex items-center justify-items-center gap-3 pr-3 pt-2">
 	<!-- Notifications Bell -->
+	{#if $session.logged_in}
 	<Notifications />
+	{/if}
 	<!-- Darkmode Toggle -->
 	<Darkmode showIcon={true} />
 	<!-- Colorblind Toggle -->
@@ -42,7 +48,7 @@
 
 <div class="app flex h-screen bg-gradient-to-r bg-white dark:from-gray-600 dark:to-slate-800">
 	<Navbar />
-	<div class={`flex-1 p-4 transition-all duration-300 ${$menuOpen ? 'ml-64' : ''} mt-10`}>
+	<div class={`flex-1 p-4 transition-all duration-300 ${$session.logged_in && $menuOpen ? 'ml-64' : ''} ${$session.logged_in && $page.route.id != '/login' && $page.route.id != '/' ? 'mt-10' : ''}`}>
 		<main>
 			<slot />
 		</main>
