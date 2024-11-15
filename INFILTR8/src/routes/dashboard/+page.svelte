@@ -269,77 +269,65 @@
 
 </script>
     
-<div class="flex flex-row items-start justify-between min-h-screen w-full">
+<div class="flex flex-row items-center justify-center min-h-screen w-full">
     <div class="flex-grow">
-        <div class="flex flex-col items-center min-h-screen w-full p-6">
+        <div class="flex flex-col items-center justify-center min-h-screen w-full p-6">
             <Heading tag="h1" class="mb-4 text-3xl font-extrabold text-center md:text-5xl lg:text-6xl">
-            <Span gradient>WELCOME TO INFILTR8</Span>
+                <Span gradient>WELCOME TO INFILTR8</Span>
             </Heading>
             <!-- Dropzone component for file uploads -->
-            <div class="justify-between">
-                <input type="file" accept=".nessus" on:change="{handleChange}" />
-                <form >
+            <div class="flex flex-col items-center w-full mt-4">
+                <input type="file" accept=".nessus" on:change="{handleChange}" class="mb-4" />
+                <form>
                     <Input class="text-center" type="text" id="first_name" placeholder="Enter Project Name" required />
                 </form>
             </div>
-            <!-- <input bind:value={name} placeholder="Enter Project Name" /> -->
-            <div class="flex flex-row justify-between w-full mt-4">
-                <div class="flex flex-col mr-8">
-                    <div class="relative w-90 ml-8">
-                        <P class="text-center mb-8">Please select from the following to get started on your project.</P>
-
-
-                        <div class="flex flex-col items-center mb-8 w-full">
-                            <GradientButton class = "mb-2" color="green"on:click={() => logButtonClick('Discard All clicked')}>Discard All</GradientButton>
-                            <GradientButton on:click={() => { logButtonClick('Create project clicked'); createProject(); }}>Create Project</GradientButton>           
-                        </div>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-semibold mb-4 text-center">Project List</h2>
-                    
-                        {#if projects.length > 0}
-                            <Table hoverable={true} class="shrink">
-                                <TableHead>
-                                    <TableHeadCell>Select</TableHeadCell> <!-- Added Select column -->
-                                    <TableHeadCell>Project Name</TableHeadCell>
-                                    <TableHeadCell>Project ID</TableHeadCell>
-                                    <TableHeadCell>IPs</TableHeadCell>
-                                    <TableHeadCell>Exploits</TableHeadCell>
-                                </TableHead>
-                                <TableBody>
-                                    {#each projects as project}
-                                        <TableBodyRow>
-                                            <!-- Add a radio button to each row -->
-                                            <TableBodyCell>
-                                                <input 
-                                                    type="radio" 
-                                                    name="project" 
-                                                    value={project.projectId} 
-                                                    on:change={() => setCurrentProject(project.projectId)} />
-                                            </TableBodyCell>
-                    
-                                            <TableBodyCell>{project.projectName}</TableBodyCell>
-                                            <TableBodyCell>{project.projectId}</TableBodyCell>
-                                            <TableBodyCell class="text-wrap">
-                                                {project.ips ? project.ips.join(', ') : ''}
-                                            </TableBodyCell>
-                                            <TableBodyCell>
-                                                {#if Array.isArray(project.exploits)}
-                                                    {project.exploits.join(', ')}
-                                                {:else}
-                                                    {project.exploits} <!-- Displays the string if it's not an array -->
-                                                {/if}
-                                            </TableBodyCell>
-                                        </TableBodyRow>
-                                    {/each}
-                                </TableBody>
-                            </Table>
-                        {:else if message}
-                            <p class="text-center text-red-500">{message}</p>
-                        {:else}
-                            <p class="text-center">Loading projects...</p>
-                        {/if}
-                    </div>
+            <div class="flex flex-col items-center w-full mt-8">
+                <P class="text-center mb-8">Please select from the following to get started on your project.</P>
+                <div class="flex flex-row justify-center gap-4 mb-8 w-full">
+                    <GradientButton class="mb-2" color="green" on:click={() => logButtonClick('Discard All clicked')}>
+                        Discard All
+                    </GradientButton>
+                    <GradientButton on:click={() => { logButtonClick('Create project clicked'); createProject(); }}>
+                        Create Project
+                    </GradientButton>
+                </div>
+                <div class="w-full">
+                    <P class="text-2xl font-semibold mb-4 text-center"> Project List</P>
+                    {#if projects.length > 0}
+                        <Table hoverable={true} class="w-full">
+                            <TableHead>
+                                <TableHeadCell>Select</TableHeadCell>
+                                <TableHeadCell>Project Name</TableHeadCell>
+                                <TableHeadCell>Exploits</TableHeadCell>
+                            </TableHead>
+                            <TableBody>
+                                {#each projects as project}
+                                    <TableBodyRow>
+                                        <TableBodyCell>
+                                            <input 
+                                                type="radio" 
+                                                name="project" 
+                                                value={project.projectId} 
+                                                on:change={() => setCurrentProject(project.projectId)} />
+                                        </TableBodyCell>
+                                        <TableBodyCell>{project.projectName}</TableBodyCell>
+                                        <TableBodyCell>
+                                            {#if Array.isArray(project.exploits)}
+                                                {project.exploits.join(', ')}
+                                            {:else}
+                                                {project.exploits}
+                                            {/if}
+                                        </TableBodyCell>
+                                    </TableBodyRow>
+                                {/each}
+                            </TableBody>
+                        </Table>
+                    {:else if message}
+                        <p class="text-center text-red-500">{message}</p>
+                    {:else}
+                        <p class="text-center">Loading projects...</p>
+                    {/if}
                 </div>
             </div>
         </div>

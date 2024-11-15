@@ -159,7 +159,7 @@
                 <Table noborder={true}>
                     <TableHead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-900 dark:text-gray-400 ">
                         <TableHeadCell>Date</TableHeadCell>
-                        <TableHeadCell>Analyst</TableHeadCell>
+                        <TableHeadCell>Project Name</TableHeadCell>
                         <TableHeadCell>File Size</TableHeadCell>
                         <TableHeadCell>Status</TableHeadCell>
                     </TableHead>
@@ -168,7 +168,7 @@
                             {#each tableData as row}
                                 <TableBodyRow>
                                     <TableBodyCell>{row.creation}</TableBodyCell>
-                                    <TableBodyCell>{row.user}</TableBodyCell>
+                                    <TableBodyCell>{row.projectName}</TableBodyCell>
                                     <TableBodyCell>{row.fileSize}</TableBodyCell>
                                     <TableBodyCell>
                                         {#if typeof row.status === 'number'}
