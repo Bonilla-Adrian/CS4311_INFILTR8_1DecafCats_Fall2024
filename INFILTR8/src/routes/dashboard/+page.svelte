@@ -81,7 +81,7 @@
     }
     async function handleResetRequest(username, action) {
     try {
-        const response = await fetch("http://localhost:5173/flask-api/approve-password-reset", {
+        const response = await fetch("/flask-api/approve-password-reset", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -136,7 +136,7 @@
         }
 
         try {
-            const response = await fetch("http://localhost:5173/flask-api/password-reset-status", {
+            const response = await fetch("/flask-api/password-reset-status", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username: checkUsername })
@@ -161,7 +161,7 @@
 
     async function fetchProjects() {
         try {
-            const response = await fetch('http://localhost:5173/flask-api/all-projects', {
+            const response = await fetch('/flask-api/all-projects', {
                 credentials: 'include'
             });
             if (response.ok) {
@@ -239,7 +239,7 @@
         formData.append("file", nessusFile);
 
         try {
-            const uploadResponse = await fetch("http://localhost:5173/flask-api/nessus-upload", {
+            const uploadResponse = await fetch("/flask-api/nessus-upload", {
                 method: "POST",
                 body: formData,
             });
@@ -272,7 +272,7 @@
       };
 
         try {
-            const response = await fetch("http://localhost:5173/flask-api/create-project", {
+            const response = await fetch("/flask-api/create-project", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(projectData),

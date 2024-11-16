@@ -138,7 +138,7 @@ def processNessus():
     
     disallowedIps = data.get("disallowedIps")
     archetypesAllowed = data.get("archetypes")
-    print(disallowedIps)
+    print("in app", disallowedIps)
     analysis.disallowed_ips = disallowedIps
     analysis.analyze_nessus_file(driver, session['currentProject'], session['username'])
     nessus_upload.processAndUpload(driver, session['username'], session['currentProject'])
