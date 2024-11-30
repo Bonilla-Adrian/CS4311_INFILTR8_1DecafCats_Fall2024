@@ -7,6 +7,13 @@ def countProjects(driver, username):
     with driver.session() as session:
         numProject = session.run(query, username=username)
         return numProject.single()['total']
+    
+def countFiles(driver, username, projectId):
+    query = "MATCH (f:File)-[r:NESSUS_FILE]->(p:Project {user: $username, projectId: $projectId}) RETURN count(f) as total"
+
+    with driver.session() as session:
+        numProject = session.run(query, username=username, projectId=projectId)
+        return numProject.single()['total']
 
 def projectParser(project):
     return {
@@ -68,6 +75,34 @@ def createProject(driver, username, projectName, fileName, status, ips, exploits
         result = session.run(query, projectId=projectId, username=username, user=username, status=status, projectName=projectName, fileName=fileName, fileSize=fileSize, creation=creation, ips=ips, exploits=exploits)
         projectId = result.single()["projectId"]
         return projectId
+    
+def testCreateProjectMany(driver, username, projectName, fileName, status, ips, exploits):
+    filePath = os.path.join(os.getcwd(), 'nessus-drop', fileName)
+    fileSize = int(os.path.getsize(filePath) / 1000)
+    creation = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    query = (
+        """
+        MATCH (u:Analyst {username: $username})
+        CREATE (p:Project {projectId: $projectId, projectName: $projectName, user: $username})-[:HAS_PROJECT]->(u)
+        return p.projectId AS projectId
+        """
+        )
+    
+    query2 = """
+    MATCH (p:Project {projectId: 2, projectName: "Test-many", user: "Test"}) 
+    CREATE (f:File{id: $fileId, status: $status, file: $fileName, fileSize: $fileSize, creation: $creation, ips: $ips, exploits: $exploits})-[:NESSUS_FILE]->(p) 
+    return f.id AS fileId
+    """
+    
+    projectId = countProjects(driver, username) + 1
+    fileId = countFiles(driver, username, projectId) + 1
+    with driver.session() as session:
+        result = session.run(query, projectId=projectId, username=username, user=username)
+        result2 = session.run(query2, id=fileId, status=status, projectName=projectName, fileName=fileName, fileSize=fileSize, creation=creation, ips=ips, exploits=exploits)
+        projectId = result.single()["projectId"]
+        fileId = result2.single()["fileId"]
+        return projectId, fileId
 
 def updateProjectStatus(driver, projectId, username, status):
     query = """

@@ -45,7 +45,9 @@ driver = neo4j.driver_make()
 @app.route("/flask-api/test")
 def test():
     # nessus_upload.getDataExploits(driver, 'test-erik', 2)
-    return jsonify({'info': 'Test to makes sure everything is working'})
+    # testCreateProjectMany()
+    temp = project.countFiles(driver, 'Test', 2)
+    return jsonify({'info': 'Test to makes sure everything is working', 'data': temp})
 
 @app.route("/flask-api/test2")
 def test2():
