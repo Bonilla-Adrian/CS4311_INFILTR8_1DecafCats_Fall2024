@@ -25,6 +25,8 @@
     let projects = [];
     let resetRequests = [];
     let errorMessage = '';  
+    let selectedFiles = [];
+
     
     // Initialize the array to hold file names
     let value = [];
@@ -36,7 +38,7 @@
       if (event.dataTransfer && event.dataTransfer.files.length > 0) {
         nessusFile = event.dataTransfer.files[0];
         console.log("File selected:", nessusFile);
-        uploadNessusFile();
+        uploadNessusFiles();
       }
     };
 
@@ -185,30 +187,30 @@
     const handleChange = (event) => {
         const target = event.target;
         const files = target?.files;
-    
+
         if (files && files.length > 0) {
-            const file = files[0];
-            const fileExtension = file.name.split('.').pop()?.toLowerCase();
-    
-            if (fileExtension === 'nessus') {
-                nessusFile = file;
-                console.log("File selected:", nessusFile);
-                let fetchP = uploadNessusFile()
-                fetchP.then((response) => {
-                  // put error handle stuff here
-                  ipList = getIPsForProject(nessusFile.name)
-                })
+            selectedFiles = [...selectedFiles, ...Array.from(files)];
+            console.log("Selected files:", selectedFiles);
+
+            message = `Selected ${selectedFiles.length} file(s): ${selectedFiles.map(f => f.name).join(", ")}`;
+
+            // Process each file
+            selectedFiles.forEach((file) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    nessusContent = e.target.result;
-                    parseNessusFile(nessusContent);
+                    const nessusContent = e.target.result;
+
+                    // Parse file contents and update `possibleEntryPoints`
+                    const entryPoints = parseNessusFile(nessusContent) || [];
+                    possibleEntryPoints = [...possibleEntryPoints, ...entryPoints];
+                    console.log("Updated possible entry points:", possibleEntryPoints);
                 };
-                reader.readAsText(file);
-            } else {
-                console.error('Invalid file type. Please upload a .nessus file.');
-            }
+                reader.readAsText(file); // Read file content
+            });
         }
     };
+
+
     
     // Display the uploaded files
     const showFiles = (files) => {
@@ -224,78 +226,89 @@
     };
 
   async function uploadParse() {
-    let fetchP = uploadNessusFile()
+    let fetchP = uploadNessusFiles()
     await fetchP.then(ipList = getIPsForProject(nessusFile.name))
   }
 
 
-    async function uploadNessusFile() {
-        if (!nessusFile) {
-            message = "Please select a file to upload.";
+async function uploadNessusFiles() {
+    if (!value.length) {
+        message = "Please select files to upload.";
+        return;
+    }
+
+    const formData = new FormData();
+    value.forEach((file) => formData.append("files", file));
+    formData.append("project_id", selectedProjectId);
+
+    try {
+        const response = await fetch("/flask-api/nessus-upload", {
+            method: "POST",
+            body: formData,
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            message = `Files uploaded successfully: ${result.files.join(', ')}`;
+        } else {
+            message = "File upload failed. Please try again.";
+        }
+    } catch (error) {
+        message = "Upload error: " + error.message;
+    }
+}
+    async function createProject() {
+        const projectName = document.getElementById("first_name").value;
+
+        if (!selectedFiles.length || !projectName) {
+            message = "Upload at least one .nessus file and provide a project name.";
+            console.warn(message);
             return;
         }
 
-        const formData = new FormData();
-        formData.append("file", nessusFile);
+        // Prepare file names for JSON (server-side code should already handle file uploads separately)
+        const fileNames = selectedFiles.map((file) => file.name);
 
-        try {
-            const uploadResponse = await fetch("/flask-api/nessus-upload", {
-                method: "POST",
-                body: formData,
-            });
-
-            if (uploadResponse.ok) {
-                const result = await uploadResponse.json();
-                message = "File uploaded successfully: " + result.status;
-            } else {
-                message = "File upload failed. Please try again.";
-            }
-        } catch (error) {
-            message = "Upload error: " + error.message;
-        }
-    }
-
-  async function createProject() {
-      if (!nessusFile || document.getElementById("first_name").value === "") {
-          message = "Upload a .nessus file first.";
-          console.warn(message);
-          return;
-      }
-
-      let ips
-      await ipList.then(function(result){ips = result})
-      const projectData = {
-          fileName: nessusFile.name,
-          name: document.getElementById("first_name").value,
-          ips: ips
-          // entryPoints: possibleEntryPoints  // Pass parsed entry points
-      };
+        // Create JSON payload
+        const payload = {
+            name: projectName,
+            fileNames: fileNames,
+            ips: [], // Add IPs if needed
+        };
 
         try {
             const response = await fetch("/flask-api/create-project", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(projectData),
-                credentials: "include"
+                headers: {
+                    "Content-Type": "application/json", // Ensure JSON content type
+                },
+                body: JSON.stringify(payload), // Send JSON instead of FormData
+                credentials: "include",
             });
 
-        if (response.ok) {
-            const data = await response.json();
-            projectInfo = { id: data.projectId, name: nessusFile.name };
+            if (response.ok) {
+                const data = await response.json();
+                message = `Project "${projectName}" created successfully with ID: ${data.projectId}`;
+                console.log(message);
 
-            message = `Project created successfully with ID: ${data.projectId}`;
-            console.log(message);
-            fetchProjects(); 
-        } else {
-            message = "Failed to create project.";
-            console.error("Project creation failed with status:", response.status);
+                // Refresh project list
+                fetchProjects();
+            } else {
+                const errorDetails = await response.text(); // Capture error details for debugging
+                console.error("Project creation failed with status:", response.status, errorDetails);
+                message = `Project creation failed with status: ${response.status}`;
+            }
+        } catch (error) {
+            console.error("Error during project creation:", error);
+            message = `Error during project creation: ${error.message}`;
         }
-      } catch (error) {
-          message = "Error: " + error.message;
-          console.error("Error during project creation:", error);
-      }
-      goto('/project')
     }
+
+
+
+
+
+
 
         async function logButtonClick(detail) {
         console.log("Button clicked with detail:", detail);  // For debugging
@@ -387,7 +400,13 @@
         <div class="columns-2 gap-x-10">
             <!-- Dropzone component for file uploads -->
             <div class="self-center float-left justify-between w-full mt-4">
-                <input type="file" accept=".nessus" on:change="{handleChange}" />
+                <input type="file" accept=".nessus" mulitple on:change="{handleChange}" />
+                <p class="text-center dark:text-gray-50 mb-4">Selected Files:</p>
+                    <ul>
+                        {#each selectedFiles as file}
+                            <li class="text-sm text-gray-300">{file.name}</li>
+                        {/each}
+                    </ul>
                 <form>
                     <Input class="text-center" type="text" id="first_name" placeholder="Enter Project Name" required />
                 </form>

@@ -57,25 +57,56 @@ def getProjectInfomation(driver, username, projectId):
         return projectParser(project)
 
 def createProject(driver, username, projectName, fileName, status, ips, exploits):
+    # Split fileName into a list of file names
+    fileNames = fileName.split(',')
+    filePaths = [os.path.join(os.getcwd(), 'nessus-drop', name.strip()) for name in fileNames]
 
-    filePath = os.path.join(os.getcwd(), 'nessus-drop', fileName)
-    fileSize = int(os.path.getsize(filePath) / 1000)
+    # Validate all files exist and calculate total file size
+    totalFileSize = 0
+    for filePath in filePaths:
+        if not os.path.exists(filePath):
+            raise FileNotFoundError(f"File not found: {filePath}")
+        totalFileSize += os.path.getsize(filePath) / 1000  # Add file size in KB
+
     creation = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     query = (
         """
         MATCH (u:Analyst {username: $username})
-        CREATE (p:Project {projectId: $projectId, projectName: $projectName, user: $username, status: $status, file: $fileName, fileSize: $fileSize, creation: $creation, ips: $ips, exploits: $exploits})-[:HAS_PROJECT]->(u)
-        return p.projectId AS projectId
+        CREATE (p:Project {
+            projectId: $projectId, 
+            projectName: $projectName, 
+            user: $username, 
+            status: $status, 
+            file: $fileNames, 
+            fileSize: $fileSize, 
+            creation: $creation, 
+            ips: $ips, 
+            exploits: $exploits
+        })-[:HAS_PROJECT]->(u)
+        RETURN p.projectId AS projectId
         """
-        )
+    )
 
+    # Generate projectId based on existing projects
     projectId = countProjects(driver, username) + 1
+
     with driver.session() as session:
-        result = session.run(query, projectId=projectId, username=username, user=username, status=status, projectName=projectName, fileName=fileName, fileSize=fileSize, creation=creation, ips=ips, exploits=exploits)
+        result = session.run(
+            query, 
+            projectId=projectId, 
+            username=username, 
+            projectName=projectName, 
+            status=status,  # Pass the status parameter explicitly
+            fileNames=', '.join(fileNames),  # Store the comma-separated file names
+            fileSize=totalFileSize, 
+            creation=creation, 
+            ips=ips, 
+            exploits=exploits
+        )
         projectId = result.single()["projectId"]
         return projectId
-    
+
 def testCreateProjectMany(driver, username, projectName, fileName, status, ips, exploits):
     filePath = os.path.join(os.getcwd(), 'nessus-drop', fileName)
     fileSize = int(os.path.getsize(filePath) / 1000)

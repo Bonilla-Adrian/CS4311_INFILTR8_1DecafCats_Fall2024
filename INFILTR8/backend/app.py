@@ -57,24 +57,30 @@ def test2():
         names.append(record[0]['name'])
     return jsonify({'test':names})
 
-### Project Routes ###
-
 @app.route("/flask-api/create-project", methods=['POST'])
 def createProject():
-    data = request.get_json()
+    data = request.form  # Use `form` to handle multipart form data
     projectName = data.get('name')
-    fileName = data.get('fileName')
+    fileNames = data.getlist('files')  # `getlist` handles multiple files
     ips = data.get('ips')
     status = 'created'
-    
+
     if 'username' not in session:
         print("User not authenticated - 'username' not in session")
-        return jsonify({'error': 'User not authenticated'}), 401  # Return a 401 Unauthorized if no username in session
-    
+        return jsonify({'error': 'User not authenticated'}), 401
+
     print(f"Creating project for user: {session['username']}")
-    newProId = project.createProject(driver, session['username'], projectName, fileName, status, ips, ['All'])
-    session['currentProject'] = newProId
-    return jsonify({'message': 'Poject has been created', 'projectId': newProId})
+    
+    # Ensure files are properly formatted into a comma-separated string
+    filePaths = ','.join(fileNames)
+    
+    try:
+        newProId = project.createProject(driver, session['username'], projectName, filePaths, status, ips, ['All'])
+        session['currentProject'] = newProId
+        return jsonify({'message': 'Project has been created', 'projectId': newProId})
+    except Exception as e:
+        print(f"Error during project creation: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route("/flask-api/all-projects")
 def allProject():
@@ -112,26 +118,49 @@ def setCurrentProject():
     except Exception as e:
          return jsonify({"error": f"An error occurred: {str(e)}"}), 500
  ### Nessus Routes ###
-
-# Handles the uploading of the file
 @app.route("/flask-api/nessus-upload", methods=['POST'])
 def nessusFileUpload():
+    if 'files' not in request.files:
+        return jsonify({'info': 'No files uploaded'}), 400
+
+    files = request.files.getlist('files')
+    project_id = request.form.get('project_id')
+
+    if not project_id:
+        return jsonify({'info': 'Project ID is required'}), 400
+
+    saved_files = []
+    for file in files:
+        if file.filename.endswith('.nessus'):
+            filename = secure_filename(file.filename)
+            save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(save_path)
+            saved_files.append(filename)
+        else:
+            return jsonify({'info': f"Invalid file type for file: {file.filename}"}), 400
+
+    print(f"Files uploaded for project {project_id}: {saved_files}")
+    return jsonify({'message': 'Files uploaded successfully', 'files': saved_files}), 200
+
+# Handles the uploading of the file
+#@app.route("/flask-api/nessus-upload", methods=['POST'])
+#def nessusFileUpload():
     # Makes sure the POST is tagged that is a file and nothing else
-    if 'file' not in request.files:
-        return jsonify({'info':'Need to be told it is file upload'})
+    #if 'file' not in request.files:
+     #   return jsonify({'info':'Need to be told it is file upload'})
     
-    file = request.files['file']
+    #file = request.files['file']
     # Checks that a file was upload (could be removed becase frontend handles this)
-    if file.filename == '':
-        print('No selected file')
-        return jsonify({'message':'no file'})
-    if file:
+    #if file.filename == '':
+      #  print('No selected file')
+     #   return jsonify({'message':'no file'})
+    #if file:
         # security stuff
-        filename = secure_filename(file.filename)
+    #    filename = secure_filename(file.filename)
         # Saves it based on the give file path and uses the upload file name
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        print(os.path.exists(app.config['UPLOAD_FOLDER']+'/'+filename))
-        return jsonify({'message':'file was sent and has been saved on server'})
+   #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+  #      print(os.path.exists(app.config['UPLOAD_FOLDER']+'/'+filename))
+ #       return jsonify({'message':'file was sent and has been saved on server'})
 
 @app.route("/flask-api/process-nessus", methods=["POST"])
 def processNessus():
