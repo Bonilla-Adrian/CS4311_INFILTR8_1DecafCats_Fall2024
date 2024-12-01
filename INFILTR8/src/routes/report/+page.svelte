@@ -19,6 +19,10 @@
 		{ name: 'Entry Most Info', endpoint: '/flask-api/entry-most-info' },
 		{ name: 'Port 0 Entries', endpoint: '/flask-api/port-0-entries' },
 	];
+	//selecting all by default
+
+
+	selectedApis=[...apis]
 
 	async function fetchCSVData() {
 		try {
@@ -232,38 +236,39 @@
 	
 		<!-- Export Modal -->
 		{#if isExportModalOpen}
-			<div class="modal-backdrop">
-				<div class="modal-container dark:bg-gray-800 bg-white">
-					<Heading tag="h4" class="mb-4">Select Datasets and Format</Heading>
-					<div class="flex flex-col gap-2 dark:text-gray-300">
-						{#each apis as api}
-							<label class="inline-flex items-center">
-								<input type="checkbox" value={api.endpoint} on:change={(e) => {
+		<div class="modal-backdrop">
+			<div class="modal-container dark:bg-gray-800 bg-white">
+				<Heading tag="h4" class="mb-4">Select Datasets and Format</Heading>
+				<div class="flex flex-col gap-2 dark:text-gray-300">
+					{#each apis as api}
+						<label class="inline-flex items-center">
+							<input type="checkbox" value={api.endpoint} checked on:change={(e) => {
 									if (e.target.checked) {
 										selectedApis = [...selectedApis, api];
 									} else {
 										selectedApis = selectedApis.filter(a => a.endpoint !== api.endpoint);
 									}
-								}} />
-								<span class="ml-2">{api.name}</span>
-							</label>
-						{/each}
-					</div>
-					<div class="mt-4">
-						<label class="block mb-2 dark:text-gray-300">Select Export Format:</label>
-						<select class="block w-full p-2 border dark:bg-gray-700 dark:text-white" bind:value={exportFormat}>
-							<option value="csv">CSV</option>
-							<option value="xml">XML</option>
-							<option value="pdf">PDF</option>
-						</select>
-					</div>
-					<div class="mt-4 flex justify-end gap-2">
-						<Button on:click={() => (isExportModalOpen = false)} color="info" class="dark:text-gray-300">Cancel</Button>
-						<Button on:click={() => { isExportModalOpen = false; exportData(); }} color="primary">Export</Button>
-					</div>
+								}} 
+							/>
+							<span class="ml-2">{api.name}</span>
+						</label>
+					{/each}
+				</div>
+				<div class="mt-4">
+					<label class="block mb-2 dark:text-gray-300">Select Export Format:</label>
+					<select class="block w-full p-2 border dark:bg-gray-700 dark:text-white" bind:value={exportFormat}>
+						<option value="csv">CSV</option>
+						<option value="xml">XML</option>
+						<option value="pdf">PDF</option>
+					</select>
+				</div>
+				<div class="mt-4 flex justify-end gap-2">
+					<Button on:click={() => (isExportModalOpen = false)} color="info" class="dark:text-gray-300">Cancel</Button>
+					<Button on:click={() => { isExportModalOpen = false; exportData(); }} color="primary">Export</Button>
 				</div>
 			</div>
-		{/if}
+		</div>
+	{/if}
 </main>
 
 <style>
