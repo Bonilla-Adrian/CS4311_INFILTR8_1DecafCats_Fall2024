@@ -155,6 +155,7 @@
 			errorMessage = 'Failed to login';
 		}
 	}
+	
 
 	async function createUser() {
 		createErrorMessage = '';
@@ -262,6 +263,7 @@
 			recoveryKeyError = data.error || 'Failed to reset password';
 		}
 	}
+
 
 	async function requestAdminReset() {
 		adminResetMessage = ''; // Reset the admin reset message
@@ -427,8 +429,9 @@
 			{#if !keyProvided && !keyVerified && !showRequestAcceptedModal}
 				<h3 class="text-xl font-semibold text-gray-900 dark:text-white">Request Admin Reset</h3>
 				<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-					Enter your username to request an admin reset or check your request status.
+					Enter your username and admins credentials to request a reset or check your request status.
 				</p>
+				
 			{:else if showRequestAcceptedModal}
 				<h3 class="text-xl font-semibold text-gray-900 dark:text-white">Check Status</h3>
 				<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -439,7 +442,7 @@
 					Reset Password with Recovery Key
 				</h3>
 				<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-					Enter your recovery key to reset your password.
+					Enter your username and recovery key to reset your password.
 				</p>
 			{:else}
 				<h3 class="text-xl font-semibold text-gray-900 dark:text-white">Reset Your Password</h3>
@@ -463,7 +466,14 @@
 
 			<!-- Modal Content -->
 			{#if keyProvided && !keyVerified}
-				<!-- Recovery Key Input -->
+				<!-- Recovery Key Input  Sebastian changes-->
+				<input
+					type="text"
+					id="account-username"  
+					bind:value={username}  
+					placeholder="Enter your Username"
+					class="mt-4 w-full rounded-md bg-gray-100 p-2 dark:bg-gray-700"
+				/>
 				<input
 					type="text"
 					id="account-key"
@@ -486,11 +496,27 @@
 					placeholder="Enter your username"
 					class="mt-4 w-full rounded-md bg-gray-100 p-2 dark:bg-gray-700"
 				/>
+				<!-- Sebastian Code -->
+				<input
+					type="text"
+					id="forgot-username"
+					bind:value={username}
+					placeholder="Enter Admin Username "
+					class="mt-4 w-full rounded-md bg-gray-100 p-2 dark:bg-gray-700"
+				/>
+				<!--Sebastian Code -->
+				<input
+					type="text"
+					id="forgot-username"
+					bind:value={password}
+					placeholder="Enter Admin Password"
+					class="mt-4 w-full rounded-md bg-gray-100 p-2 dark:bg-gray-700"
+				/>
 				<button
-					on:click={requestAdminReset}
+					on:click={requestAdminReset && }
 					class="mt-4 w-full rounded-lg bg-blue-600 px-4 py-2 text-white"
 				>
-					Request Admin Reset
+					Reset Password 
 				</button>
 
 				<!-- Toggle to Check Status -->
