@@ -7,10 +7,10 @@ import category_encoders as ce
 from sklearn.preprocessing import MinMaxScaler
 
 # Path to the Nessus XML file, change line 10 to match path where your NESSUS file is
-nessus_file = 'nessus_v_unknown.nessus'
+nessus_file = '/Users/tomas/CS4311_INFILTR8_Team1_DecafCats_Fall2024/INFILTR8/backend/nessus-drop/Nessus_scan_file1.nessus'
 
 # Base directory for output CSV files, change line 13 to where you want output CSVs to go
-output_base_dir = '/home/erik/utep-fall-24/CS4311_INFILTR8_1DecafCats_Fall2024/INFILTR8/backend/output'
+output_base_dir = '/Users/tomas/CS4311_INFILTR8_Team1_DecafCats_Fall2024/INFILTR8/backend/output'
 
 # Construct paths for output CSV files
 data_with_exploits_path = os.path.join(output_base_dir, 'data_with_exploits.csv')
@@ -91,6 +91,8 @@ for host in main_tree.findall('.//ReportHost'):
 # Export DataFrame to CSV file
 df.to_csv(data_with_exploits_path, index=False)
 
+unique_ips = df['ip'].unique()
+
 # Debugging: Print DataFrame shape and head to verify final output
 print(f"DataFrame shape: {df.shape}")
 print(df.head())
@@ -166,6 +168,7 @@ print(f"\nTop entry points saved to {entrypoint_most_info_path}")
 
 # Filter entries with Port 0 from the data_with_exploits.csv
 port_0_entries = df[df['port'] == '0']
+
 
 # Print out or save the filtered entries
 print("\nEntries mapped to Port 0:\n")

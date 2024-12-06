@@ -3,14 +3,14 @@ from flask import Flask, make_response, jsonify, request, redirect, url_for, fla
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
 from dotenv import dotenv_values
-from classes import database
+from classes import database, analysis, parser
 from flask import send_file
 from logs.logmanager import LogManager
 from classes import user_service, project, nessus_upload
 import bcrypt
 from flask_session import Session
-from datetime import datetime, timezone
-
+import subprocess
+import json
 
 # Gets all the env variables
 config = dotenv_values(".env")
@@ -120,6 +120,24 @@ def processNessus():
 @app.route("/flask-api/ranked-entry-points")
 def rankedEntryPoints():
     return
+
+@app.route("/flask-api/get-ips")
+def receive_ips():
+    ips = request.json
+    # Run analysis.py with the data as a JSON command-line argument
+    analysis.disallowed_ips = ips
+    analysis.analyze_nessus_file()
+    return jsonify({"messaage":"success", "data":ips})
+
+@app.route("/flask-api/get-all-ips", methods=['GET'])
+def get_all_ips():
+    try:
+        all_ips = parser.unique_ips
+        print("All IPs:", all_ips)  # Debugging print
+        return jsonify(all_ips.tolist())
+    except Exception as e:
+        print("Error:", e)  # Log the error for debugging
+        return jsonify({"error": str(e)}), 500
 
 ### Logging fuctions ###
 

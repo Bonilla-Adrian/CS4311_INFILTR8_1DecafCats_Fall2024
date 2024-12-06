@@ -55,16 +55,13 @@
 			console.log(data);
 		} catch (err) {
 			console.log('Error fetching data:',err);
-			console.log(err)
 		}
 	}
 
 	async function sendFile(file) {
 		const formData = new FormData()
-		// Have to give the first parameter 'file' to the formData
 		formData.append('file', file)
 		console.log(formData)
-		// Make sure to use the post method here and to include the formData in the body
 		const response = await fetch("/flask-api/nessus-upload", {
 			method: 'POST',
 			body: formData
@@ -76,7 +73,7 @@
 
 	function handleDataBaseTest() {
 		testGet();
-		sendFile(selectedFile)
+		sendFile(selectedFile);
 	}
 
 	let rows = [
@@ -107,7 +104,7 @@
 		{
 			id: 4,
 			ipAddress: '11.27.177.103',
-			device: 'Device 42',
+			device: 'Device 462',
 			vulnerability: 'CVE-2024-6066 (Remote Code Execution in API Endpoint)',
 			status: 'Exploited',
 			selected: false
@@ -115,18 +112,49 @@
 	];
 
 	let exportFormat = 'Format to export';
+	let selectAll = true ;
 
-	function toggleSelect(row) {
-		row.selected = !row.selected;
-	}
+	// Toggle individual row selection
+	//function toggleSelect(row) {
+	//	row.selected = !row.selected;
+	//}
+	//function toggleSelect(row) {
+  	//	if (row.selected !== selectAll) {
+    //		row.selected = !row.selected;
+  	//	}
+	//}
 
-	let selectAll = false;
+	// Toggle "Select All" functionality
+	//function toggleSelectAll() {
+	//	selectAll = !selectAll;
+	//	rows.forEach((row) => row.selected = selectAll);
+	//}
 
+	//function toggleSelectAll() {
+  	//	selectAll = !selectAll;
+  	//	rows.forEach((row) => {
+    //		row.selected = selectAll ? !row.selected : row.selected;
+  	//	});
+
+	//	this.$set({ selectAll });
+	//}
+
+
+	// Toggle "Select All" functionality
 	function toggleSelectAll() {
 		selectAll = !selectAll;
-		rows.forEach((row) => (row.selected = selectAll));
+		rows = rows.map(row => ({
+			...row,
+			selected: selectAll
+		}));
 	}
 
+	// Toggle individual row selection and update "Select All" checkbox if needed
+	function toggleSelect(row) {
+		row.selected = !row.selected;
+		// Check if all rows are selected after toggling
+		selectAll = rows.every(row => row.selected);
+	}
 	function handleExportFormatChange(event) {
 		exportFormat = event.target.value;
 	}
@@ -167,7 +195,12 @@
 	<Table class="shadow-md sm:rounded-lg">
 		<TableHead>
 			<TableHeadCell padding="px-4 py-3">
-				<input type="checkbox" bind:checked={selectAll} on:change={toggleSelectAll} />
+				<!-- Select All Checkbox -->
+				<input 
+					type="checkbox" 
+					checked={selectAll} 
+					on:change={toggleSelectAll} 
+				/>
 			</TableHeadCell>
 			<TableHeadCell padding="px-4 py-3">IP Address</TableHeadCell>
 			<TableHeadCell padding="px-4 py-3">Device</TableHeadCell>
@@ -176,12 +209,13 @@
 		</TableHead>
 
 		<TableBody class="divide-y">
-			{#each rows as row}
+			{#each rows as row (row.id)}
 				<TableBodyRow>
 					<TableBodyCell>
+						<!-- Individual Row Checkbox -->
 						<input
 							type="checkbox"
-							bind:checked={row.selected}
+							checked={row.selected}
 							on:change={() => toggleSelect(row)}
 						/>
 					</TableBodyCell>

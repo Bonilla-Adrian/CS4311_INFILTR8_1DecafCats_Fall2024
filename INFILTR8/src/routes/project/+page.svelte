@@ -1,6 +1,6 @@
 <!--TODO add store for exploits allowed -->
 <!--visual planning-->
-<!--THIS PAGE EXPECTS DATA FROM THE NESSUS FILE LIKE IPS AND ENTRY POINTS  -->
+
 
 <script>
     import IP from '$lib/IP.js';
@@ -8,7 +8,39 @@
     import { TrashBinSolid } from 'flowbite-svelte-icons';
     import { ipsAllowed } from '$lib/stores.js';
     import { ipsDisallowed } from '$lib/stores.js';
+    import { onMount } from 'svelte';
 
+    //should be ran once a nessus file is uploaded
+    async function getIPsFromBackend() {
+        try {
+            const response = await fetch("/flask-api/get-all-ips", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const data = await response.json(); // Parse JSON response
+            console.log("IPs received from backend:", data);
+            addIPstoStore(data); // Update the store with received IPs
+        } catch (error) {
+            console.error("There was an error retrieving IPs from the backend:", error);
+        }
+    }
+  
+    function addIPstoStore(data) {
+        const ipInstances = data.map(ipAddress => new IP(ipAddress)); // Create IP instances
+        console.log(ipInstances)
+        ipsDisallowed.set(ipInstances); // Update the store with IP instances
+    }
+
+    onMount(() => {
+        getIPsFromBackend();
+    });
 
     let exploitsAllowed = [
         { id: 1, name: 'SQL Injection', selected: false },
@@ -41,22 +73,6 @@
         updateList(newList);
        // logger.logUserAction(testuser,"Deleted item", `at index ${index}. New list:`, newList );
     }
-
-    function addIP(updateList) {
-        let ipAddress = prompt("Enter the IPv4 address:"); 
-        if (ipAddress) {
-            if (isValidIPv4(ipAddress)) {
-                let newIP = new IP(ipAddress); 
-                updateList(newIP); // Call the callback to update the list
-                //logger.logUserAction(testuser,"Created IP", newIP.getDescription()); 
-            } else {
-                alert("Please enter a valid IPv4 address.");
-            }
-        } else {
-            alert("IP address cannot be empty.");
-        }
-    }
-
 
     function moveUp(list, index) {
         if (index > 0) {

@@ -63,9 +63,13 @@
         }
         },
         grid: {padding: {top: -2}},
-        labels: ['Analyzing', 'Scheduled', 'Completed'],
+        labels: [
+        '<span class="text-analyzing dark:text-white ">Analyzing</span>',
+        '<span class="text-scheduled dark:text-white">Scheduled</span>',
+        '<span class="text-completed dark:text-white">Completed</span>',
+    ],
         dataLabels: {enabled: false},
-        legend: {position: 'bottom', fontFamily: 'Inter, sans-serif'},
+        legend: {position: 'bottom', fontFamily: 'Inter, sans-serif dark:text-white'},
         yaxis: {
         labels: {
             formatter: function (value) {
@@ -160,23 +164,23 @@
 <!-- whole page -->
 <main>
     
-    <h1 class="font-bold text-xl">Analysis</h1>
+    <h1 class="font-bold text-xl dark:text-white">Analysis</h1>
 
     <div>
         <!-- start of the left column -->   
           
-        <div id="left" class="float-left  w-8/12 h-flex shadow-2xl  rounded-md">
+        <div id="left" class="float-left  w-8/12 h-flex   ">
             <!-- table section -->
-            <div id="table" class="my-14">
+            <div id="table" class="my-6">
                 <Table noborder={true}>
-                    <TableHead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-900 dark:text-gray-400">
+                    <TableHead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-900 dark:text-gray-400 ">
                     <TableHeadCell>Date</TableHeadCell>
                     <TableHeadCell>Analyst</TableHeadCell>
                     <TableHeadCell>File Size</TableHeadCell>
                     <TableHeadCell>Progress</TableHeadCell>
                     </TableHead>
                     <TableBody>
-                    <TableBodyRow class="bg-gray-100" on:click>
+                    <TableBodyRow class=" " on:click>
                         <TableBodyCell>9/13/2024 - 10:00:00 AM</TableBodyCell>
                         <TableBodyCell>John Doe</TableBodyCell>
                         <TableBodyCell>--</TableBodyCell>
@@ -211,19 +215,19 @@
               </div>    
         </div>
 
-        <!-- start of the right column -->
-        <div id="right" class="flex-top float-right  w-3/12 h-dvh mr-20 py-0">
+        <!-- start of the right column  and Anaysis Progress-->
+        <div id="right" class="flex-top float-right  w-3/12 h-dvh mr-20 py-6">
             <!-- start of the pie chart -->
             <div id="topChart">
                 <Card>
                     <div class="flex justify-between items-start w-full">
                       <div class="flex-col items-center">
                         <div class="flex items-center mb-1">
-                          <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white me-1">Analysis progress</h5>
-                          <InfoCircleSolid id="donut1" class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white cursor-pointer ms-1" />
+                          <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-gray-400 me-1">Analysis progress</h5>
+                          <InfoCircleSolid id="donut1" class="w-3.5 h-3.5 text-gray-500 dark:text-white hover:text-gray-900 dark:hover:text-white cursor-pointer ms-1" />
                           <Popover triggeredBy="#donut1" class="text-sm text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm w-72 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 z-10">
                             <div class="p-3 space-y-2">
-                              <h3 class="font-semibold text-gray-900 dark:text-white">Progress Chart</h3>
+                              <h3 class="font-semibold te dark:text-white">Progress Chart</h3>
                               <p>Shows the amount of projects that are completed, scheduled and are currently being analyzed</p>
                             </div>
                           </Popover>
@@ -236,7 +240,7 @@
             
             <!-- start of current project settings -->
             <div id="bottomSettings" class=" py-6 rounded-md shadow-2xl  ">
-                <h2 class="text-center font-bold leading-none text-gray-900 dark:text-white me-1 dark:bg-gray-900">Current Test</h2>
+                <h2 class="text-center font-bold  font-bold leading-none text-gray-900 dark:text-gray-400  me-1 dark:bg-gray-900">Current Test</h2>
                 
                 <div class="px-2 dark:text-white dark:bg-gray-700">
                     <p>Project Name: Test Run</p>
@@ -275,7 +279,7 @@
 
         <div id="middle" class="flex-top float-left  w-8/12  py-0">
             <!-- start of Summary-->
-            <div id="bottomSettings" class="py-8 rounded-md shadow-2xl dark:bg-gray-900"> 
+            <div id="bottomSettings" class="py-8 shadow-2xl dark:bg-gray-900"> 
                 <h2 class="text-center font-bold text-xl leading-none text-gray-900 dark:text-white me-1 dark:bg-gray-900" >Summary</h2>
                 <div class="overflow-y-auto h-11  max-w-2xs lg:h-[calc(100vh-30rem)] lg:block dark:bg-gray-800 lg:me-0 lg:sticky top-2 px-2 dark:text-white">
                     <p>Current Testing</p>

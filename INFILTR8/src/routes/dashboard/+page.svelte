@@ -8,6 +8,7 @@
     import { Alert } from 'flowbite-svelte';
     import { InfoCircleSolid } from 'flowbite-svelte-icons';
     import { onMount } from 'svelte';
+    import { Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
     let simpleList = ['Test1'];
     let folderName = '';
     let nessusFile;
@@ -15,6 +16,7 @@
     let validEntryPoints = [];
     let nessusContent = '';
     let message = "";
+    let projectInfo = null;
     
     // Initialize the array to hold file names
     let value = [];
@@ -175,6 +177,7 @@
 
             if (response.ok) {
                 const data = await response.json();
+                projectInfo = { id: data.projectId, name: nessusFile.name };
                 message = `Project created successfully with ID: ${data.projectId}`;
                 console.log(message);
             } else {
@@ -206,57 +209,25 @@
                 <GradientButton on:click={createProject}>Create Project</GradientButton>
             </div>
             <div class="flex flex-col justify-between w-full">
-            <Listgroup items={simpleList} let:item class="flex-grow w-full">
-                <div class="mb-1 text-base font-medium text-blue-700 dark:text-blue-500">TEST 1</div>
-                <Progressbar progress="5" color="blue" />
-                <div class="mb-1 text-base font-medium text-red-700 dark:text-red-500">TEST 2</div>
-                <Progressbar progress="10" color="red" />
-                <div class="mb-1 text-base font-medium text-green-700 dark:text-green-500">TEST 3</div>
-                <Progressbar progress="50" color="green" />
-                <div class="mb-1 text-base font-medium text-yellow-700 dark:text-yellow-500">TEST 4</div>
-                <Progressbar progress="30" color="yellow" />  
-                <div class="mb-1 text-base font-medium text-purple-700 dark:text-purple-400">TEST 5</div>
-                <Progressbar progress="70" color="purple" />
-            </Listgroup> 
-                </div>
+                {#if projectInfo}
+                        <Table color="blue" hoverable={true}>
+                            <TableHead>
+                                <TableHeadCell>Project Name</TableHeadCell>
+                                <TableHeadCell>Project ID</TableHeadCell>
+                            </TableHead>
+                            <TableBody>
+                                <TableBodyRow>
+                                    <TableBodyCell>{projectInfo.name}</TableBodyCell>
+                                    <TableBodyCell>{projectInfo.id}</TableBodyCell>
+                                </TableBodyRow>
+                            </TableBody>
+                        </Table>
+                      {/if}
+                </div>            
             </div>
         </div>
     </div>
     <div class="relative w-90 ml-8">
-        <h2 class="text-xl font-bold text-gray-700 dark:text-gray-300 my-4">Notification Center</h2>
-        <!-- Notifications -->
-        <div class="space-y-4">
-            <Alert>
-                <InfoCircleSolid slot="icon" class="w-5 h-5" />
-                <span class="font-medium">Default alert!</span>
-                Change a few things up and try submitting again.
-            </Alert>
-            <Alert color="blue">
-                <InfoCircleSolid slot="icon" class="w-5 h-5" />
-                <span class="font-medium">Info alert!</span>
-                Change a few things up and try submitting again.
-            </Alert>
-            <Alert color="red">
-                <InfoCircleSolid slot="icon" class="w-5 h-5" />
-                <span class="font-medium">Danger alert!</span>
-                Change a few things up and try submitting again.
-            </Alert>
-            <Alert color="green">
-                <InfoCircleSolid slot="icon" class="w-5 h-5" />
-                <span class="font-medium">Success alert!</span>
-                Change a few things up and try submitting again.
-            </Alert>
-            <Alert color="yellow">
-                <InfoCircleSolid slot="icon" class="w-5 h-5" />
-                <span class="font-medium">Warning alert!</span>
-                Change a few things up and try submitting again.
-            </Alert>
-            <Alert color="dark">
-                <InfoCircleSolid slot="icon" class="w-5 h-5" />
-                <span class="font-medium">Dark alert!</span>
-                Change a few things up and try submitting again.
-            </Alert>
-        </div>
     </div>
   </div>
 

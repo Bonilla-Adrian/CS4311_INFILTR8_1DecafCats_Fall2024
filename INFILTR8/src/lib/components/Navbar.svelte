@@ -141,7 +141,7 @@
 					</li>
 				{/each}
 			</ul>
-			<hr class="mt-2" />
+			<hr class="my-2" />
 			{#if loggedIn}
 				<a
 					data-sveltekit-preload-data="tap"
@@ -250,7 +250,7 @@
 						</li>
 					{/each}
 				</ul>
-				<hr class="mt-2" />
+				<hr class="my-2" />
 				{#if loggedIn}
 					<a
 						data-sveltekit-preload-data="tap"
